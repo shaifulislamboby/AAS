@@ -14,6 +14,7 @@ using BaSyx.Common.UI;
 using BaSyx.Common.UI.Swagger;
 using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings.Types;
+using HelloAssetAdministrationShell.MqttConnection;
 using NLog;
 using NLog.Web;
 
@@ -27,6 +28,8 @@ namespace HelloAssetAdministrationShell
         static void Main(string[] args)
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
+
+             MqttClientFunction cl = new MqttClientFunction();
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
@@ -67,7 +70,7 @@ namespace HelloAssetAdministrationShell
             };
 
             //Run HTTP server
-            server.Run();           
+            server.Run();
         }
     }
 }

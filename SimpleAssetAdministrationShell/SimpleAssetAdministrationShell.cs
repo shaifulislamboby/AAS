@@ -121,6 +121,31 @@ namespace SimpleAssetAdministrationShell
                             {
                                 Set = (prop, val) => y = val,
                                 Get = prop => { return Math.Pow(y, i); }
+                            },
+                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                            {
+                                Value =
+                                {
+                                     new Property<string>("OrderID")
+                                    {
+                                        Set =(prop, val) => propertyValue = val,
+                                        Get = prop => {return propertyValue; }
+                                    },
+                                     new Property<string>("MachineID","DMU80eVo1")
+                                    {
+                                        Set =(prop, val) => propertyValue = val,
+                                        Get = prop => {return propertyValue; }
+                                    },new Property<string>("MaintenanceDescription","250HMaintenance")
+                                    {
+                                        Set =(prop, val) => propertyValue = val,
+                                        Get = prop => {return propertyValue; }
+                                    },
+                                     new Property<string>("VenueOfMaintenance","Achen")
+                                    {
+                                        Set =(prop, val) => propertyValue = val,
+                                        Get = prop => {return propertyValue; }
+                                    }
+                                }
                             }
                         }
                     },
@@ -194,6 +219,9 @@ namespace SimpleAssetAdministrationShell
             };
 
             testSubmodel.SubmodelElements["TestProperty4"].Cast<IProperty>().ValueChanged += SimpleAssetAdministrationShell_ValueChanged;
+
+            
+
 
             return testSubmodel;
         }
