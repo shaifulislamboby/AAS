@@ -21,9 +21,11 @@ using BaSyx.Models.Extensions.Semantics.DataSpecifications;
 using BaSyx.Utils.ResultHandling;
 using HelloAssetAdministrationShell.MqttConnection;
 using Makaretu.Dns;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Tmds.Linux;
 
 namespace HelloAssetAdministrationShell
 {
@@ -38,20 +40,20 @@ namespace HelloAssetAdministrationShell
 
         public HelloAssetAdministrationShellService()
         {
-            helloSubmodelServiceProvider = new SubmodelServiceProvider();
-            helloSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["HelloSubmodel"]);
-            helloSubmodelServiceProvider.RegisterMethodCalledHandler("HelloOperation", HelloOperationHandler);
-            helloSubmodelServiceProvider.RegisterSubmodelElementHandler("HelloProperty",
-                new SubmodelElementHandler(HelloSubmodelElementGetHandler, HelloSubmodelElementSetHandler));
-            this.RegisterSubmodelServiceProvider("HelloSubmodel", helloSubmodelServiceProvider);
+            /* helloSubmodelServiceProvider = new SubmodelServiceProvider();
+                        helloSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["HelloSubmodel"]);
+                        helloSubmodelServiceProvider.RegisterMethodCalledHandler("HelloOperation", HelloOperationHandler);
+                        helloSubmodelServiceProvider.RegisterSubmodelElementHandler("HelloProperty",
+                            new SubmodelElementHandler(HelloSubmodelElementGetHandler, HelloSubmodelElementSetHandler));
+                        this.RegisterSubmodelServiceProvider("HelloSubmodel", helloSubmodelServiceProvider);
 
-            operationalDataSubmodelServiceProvider = new SubmodelServiceProvider();
-            operationalDataSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["OperationalDataSubmodel"]);
-            operationalDataSubmodelServiceProvider.RegisterMethodCalledHandler("OperationalData", OperationalDataOperationHandler);
-            operationalDataSubmodelServiceProvider.RegisterSubmodelElementHandler("OperationalDataProperty",
-                new SubmodelElementHandler(OperationalDataSubmodelElementGetHandler, OperationalDataSubmodelElementSetHandler));
-            this.RegisterSubmodelServiceProvider("OperationalDataSubmodel", operationalDataSubmodelServiceProvider);
-
+                        operationalDataSubmodelServiceProvider = new SubmodelServiceProvider();
+                        operationalDataSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["OperationalDataSubmodel"]);
+                        operationalDataSubmodelServiceProvider.RegisterMethodCalledHandler("OperationalData", OperationalDataOperationHandler);
+                        operationalDataSubmodelServiceProvider.RegisterSubmodelElementHandler("OperationalDataProperty",
+                            new SubmodelElementHandler(OperationalDataSubmodelElementGetHandler, OperationalDataSubmodelElementSetHandler));
+                        this.RegisterSubmodelServiceProvider("OperationalDataSubmodel", operationalDataSubmodelServiceProvider);
+            */
 
             maintenanceSubmodelServiceProvider = new SubmodelServiceProvider();
             maintenanceSubmodelServiceProvider.BindTo(AssetAdministrationShell.Submodels["MaintenanceSubmodel"]);
@@ -60,10 +62,10 @@ namespace HelloAssetAdministrationShell
                 new SubmodelElementHandler(MaintenanceSubmodelElementGetHandler, MaintenanceSubmodelElementSetHandler));
             this.RegisterSubmodelServiceProvider("MaintenanceSubmodel", maintenanceSubmodelServiceProvider);
 
-            assetIdentificationSubmodelProvider = new SubmodelServiceProvider();
-            assetIdentificationSubmodelProvider.BindTo(AssetAdministrationShell.Submodels["AssetIdentification"]);
-            assetIdentificationSubmodelProvider.UseInMemorySubmodelElementHandler();
-            this.RegisterSubmodelServiceProvider("AssetIdentification", assetIdentificationSubmodelProvider);
+            /* assetIdentificationSubmodelProvider = new SubmodelServiceProvider();
+             assetIdentificationSubmodelProvider.BindTo(AssetAdministrationShell.Submodels["AssetIdentification"]);
+             assetIdentificationSubmodelProvider.UseInMemorySubmodelElementHandler();
+             this.RegisterSubmodelServiceProvider("AssetIdentification", assetIdentificationSubmodelProvider);*/
         }
 
         private void HelloSubmodelElementSetHandler(ISubmodelElement submodelElement, IValue value)
@@ -127,7 +129,6 @@ namespace HelloAssetAdministrationShell
             return new ElementValue(localProperty.Value, localProperty.ValueType);
         }
 
-
         public override IAssetAdministrationShell BuildAssetAdministrationShell()
         {
             AssetAdministrationShell aas = new AssetAdministrationShell("CNCMACHINEAAS_01", new BaSyxShellIdentifier("CNCMACHINEAAS_01", "1.0.0"))
@@ -141,52 +142,52 @@ namespace HelloAssetAdministrationShell
                 }
             };
 
-            Submodel helloSubmodel = new Submodel("HelloSubmodel", new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0"))
-            {
-                Description = new LangStringSet() { new LangString("enS", "This is an exemplary Submodel") },
-                Kind = ModelingKind.Instance,
-                SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
-            };
+            /* Submodel helloSubmodel = new Submodel("HelloSubmodel", new BaSyxSubmodelIdentifier("HelloSubmodel", "1.0.0"))
+             {
+                 Description = new LangStringSet() { new LangString("enS", "This is an exemplary Submodel") },
+                 Kind = ModelingKind.Instance,
+                 SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
+             };
 
-            helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>();
-            helloSubmodel.SubmodelElements.Add(new Property<string>("HelloProperty", "TestValue")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary property") },
-                SemanticId = new Reference(new GlobalKey(KeyElements.Property, KeyType.IRI, "urn:basys:org.eclipse.basyx:dataElements:HelloProperty:1.0.0"))
-            });
+             helloSubmodel.SubmodelElements = new ElementContainer<ISubmodelElement>();
+             helloSubmodel.SubmodelElements.Add(new Property<string>("HelloProperty", "TestValue")
+             {
+                 Description = new LangStringSet() { new LangString("en", "This is an exemplary property") },
+                 SemanticId = new Reference(new GlobalKey(KeyElements.Property, KeyType.IRI, "urn:basys:org.eclipse.basyx:dataElements:HelloProperty:1.0.0"))
+             });
 
-            helloSubmodel.SubmodelElements.Add(new Property<string>("Temperature", "0")
-            {
-               Description = new LangStringSet() { new LangString("en", "This property shows the Current Temperature value")}
-                 
-            });
-            helloSubmodel.SubmodelElements.Add(new Property<string>("Humidity", "0")
-            {
-                Description = new LangStringSet() { new LangString("en", "This property shows the Current Humidity value") }
+             helloSubmodel.SubmodelElements.Add(new Property<string>("Temperature", "0")
+             {
+                Description = new LangStringSet() { new LangString("en", "This property shows the Current Temperature value")}
 
-            });
+             });
+             helloSubmodel.SubmodelElements.Add(new Property<string>("Humidity", "0")
+             {
+                 Description = new LangStringSet() { new LangString("en", "This property shows the Current Humidity value") }
 
-            helloSubmodel.SubmodelElements.Add(new File("HelloFile")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary file attached to the Asset Administration Shell") },
-                MimeType = "application/pdf",
-                Value = "/HelloAssetAdministrationShell.pdf"
-            });
+             });
 
-            helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation")
-            {
-                Description = new LangStringSet() { new LangString("en", "This is an exemplary operation returning the input argument with 'Hello' as prefix") },
-                InputVariables = new OperationVariableSet() { new Property<string>("Text") },
-                OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") }
-            });
+             helloSubmodel.SubmodelElements.Add(new File("HelloFile")
+             {
+                 Description = new LangStringSet() { new LangString("en", "This is an exemplary file attached to the Asset Administration Shell") },
+                 MimeType = "application/pdf",
+                 Value = "/HelloAssetAdministrationShell.pdf"
+             });
 
-            helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation2")
-            {
-                Description = new LangStringSet() { new LangString("en", "This operation does nothing") }
-            });
+             helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation")
+             {
+                 Description = new LangStringSet() { new LangString("en", "This is an exemplary operation returning the input argument with 'Hello' as prefix") },
+                 InputVariables = new OperationVariableSet() { new Property<string>("Text") },
+                 OutputVariables = new OperationVariableSet() { new Property<string>("ReturnValue") }
+             });
 
-            aas.Submodels = new ElementContainer<ISubmodel>();
-            aas.Submodels.Add(helloSubmodel);
+             helloSubmodel.SubmodelElements.Add(new Operation("HelloOperation2")
+             {
+                 Description = new LangStringSet() { new LangString("en", "This operation does nothing") }
+             });
+
+             aas.Submodels = new ElementContainer<ISubmodel>();
+             aas.Submodels.Add(helloSubmodel);*/
 
             Submodel maintenanceSubmodel = new Submodel("MaintenanceSubmodel", new BaSyxSubmodelIdentifier("MaintenanceSubmodel", "1.0.0"))
             {
@@ -194,119 +195,250 @@ namespace HelloAssetAdministrationShell
                 Kind = ModelingKind.Instance,
                 SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:maintenancesubmodel:1.0.0"))
             };
-            maintenanceSubmodel.SubmodelElements.Add( new SubmodelElementCollection("Maintenance250H")
+            maintenanceSubmodel.SubmodelElements.Add(new SubmodelElementCollection("Maintenance_1")
             {
-                Value =
-                        {
-                            new Property<int>("OperationCounter250H",0),
-                            new Property<string>("MaintenanceThresold250H"),
+                Value = {
+                            new SubmodelElementCollection("MaintenanceDetails")
+
+                            {
+                                new Property<string>("OperatingHours","00:00:00"),
+                                new Property<int>("MaintenanceWarning",200),
+                                new Property<int>("MaintenanceThreshold",250),
+                                new Property<Event>("MaintenanceWarningAlarm"),
+                                new Property<Event>("MaintenanceAlarm")
+
+                             },
+
                             new SubmodelElementCollection("MaintenanceOrderDescription")
                             {
                                 Value =
                                 {
-                                    new Property<string>("OrderID"),
-                                    new Property<string>("MachineID","DMU80eVo1"),
-                                    new Property<string>("MaintenanceOrderDescription","250HMaintenance"),
-                                    new Property<string>("VenueOfMaintenance","Achen")
+                                    new Property<string>("MaintenanceElement","DMU80eVo1"),
+                                    new Property<int>("MaintenanceThreshold",250),
+                                    new Property<string>("MaintenaceCompany","Lauscher"),
+                                    new Property<string>("MaintenanceCompanyLocation","Achen")
                                 }
                             },
-                             new SubmodelElementCollection("MaintenanceOrderStatus250")
+                             new SubmodelElementCollection("MaintenanceOrderStatus")
                             {
                                 Value =
                                 {
-                                    new Property<string>("ActualOrderStatus250H"),
-                                    new BasicEvent("MaintenanceCompetionEvent")
+                                    new Property<string>("ActualOrderStatus"),
+                                    new BasicEvent("MaintenanceOrderCompetionEvent")
                                     {
-                                         
+
                                     }
                                 }
-                            }, 
-                              new SubmodelElementCollection("MaintenanceRecord250H")
+                            },
+                              new SubmodelElementCollection("MaintenanceRecord")
                             {
                                 Value =
                                 {
-                                    new Property<string>("MaintenanceCompletionTime250H"),
-                                    new Property<string>("MaintenanceStuff250H","DMU80eVo1"),
-                                    new Property<string>("MaintenanceCost","250HMaintenance"),
+                                    new Property<DateTime>("MaintenanceStart"), // type date timeStamp not understood(not found con we suse Date time)
+                                    new Property<DateTime>("MaintenanceEnd"),
+                                    new Property<double>("MaintenanceCompletionTime"),
+                                    new Property<string>("MaintenanceStaff"),
+                                    new Property<double> ( "MaintenanceCost")
                                 }
-                            }
-                        }
-            });
-            
-                
-
-            
-
-
-            Submodel operationalDataSubmodel = new Submodel("OperationalDataSubmodel", new BaSyxSubmodelIdentifier("OperationalDataSubmodel", "1.0.0"))
-            {
-                Description = new LangStringSet() { new LangString("enS", "This is used to visualize real time operationalvalues") },
-                Kind = ModelingKind.Instance,
-                SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
-            };
-            operationalDataSubmodel.SubmodelElements.Add(new SubmodelElementCollection("OperationalData")
-            {
-                Value =
-                {
-                    new Property<double>("Temperature", 0),
-                    new Property<double>("humidity",0),
-                    new Property<string>("MachineStatus"),
-                    
-                }
-            });
-            aas.Submodels.Add(maintenanceSubmodel);
-           
-            aas.Submodels.Add(operationalDataSubmodel);
-            var assetIdentificationSubmodel = new Submodel("AssetIdentification", new BaSyxSubmodelIdentifier("AssetIdentification", "1.0.0"))
-            {
-                Kind = ModelingKind.Instance
-            };
-
-            var productTypeProp = new Property<string>("ProductType")
-            {
-                SemanticId = new Reference(
-                  new GlobalKey(
-                      KeyElements.Property,
-                      KeyType.IRDI,
-                      "0173-1#02-AAO057#002")),
-                Value = "HelloAsset_ProductType"
-            };
-
-            ConceptDescription orderNumberCD = new ConceptDescription()
-            {
-                Identification = new Identifier("0173-1#02-AAO689#001", KeyType.IRDI),
-                EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
-                {
-                    new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
+                            },
+                    new SubmodelElementCollection("MaintenanceHistory")
                     {
-                        PreferredName = new LangStringSet { new LangString("en", "identifying order number") },
-                        Definition =  new LangStringSet { new LangString("en", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
-                        DataType = DataTypeIEC61360.STRING
-                    })
+                        Value =
+                        {
+                            new Property<int>("MaintenanceCounter",0)
+                        }
+                    }
+
                 }
-            };
+            });
 
-            var orderNumber = new Property<string>("OrderNumber")
+            maintenanceSubmodel.SubmodelElements.Add(new SubmodelElementCollection("Maintenance_2")
             {
-                SemanticId = new Reference(
-                    new GlobalKey(
-                        KeyElements.Property,
-                        KeyType.IRDI,
-                        "0173-1#02-AAO689#001")),
-                Value = "HelloAsset_OrderNumber",
-                ConceptDescription = orderNumberCD
-            };
+                Value = {
+                            new SubmodelElementCollection("MaintenanceDetails")
 
-            var serialNumber = new Property<string>("SerialNumber", "HelloAsset_SerialNumber");
+                            {
+                                new Property<string>("OperatingHours","00:00:00"),
+                                new Property<int>("MaintenanceWarning",400),
+                                new Property<int>("MaintenanceThreshold",500),
+                                new Property<Event>("MaintenanceWarningAlarm"),
+                                new Property<Event>("MaintenanceAlarm")
 
-            assetIdentificationSubmodel.SubmodelElements.Add(productTypeProp);
-            assetIdentificationSubmodel.SubmodelElements.Add(orderNumber);
-            assetIdentificationSubmodel.SubmodelElements.Add(serialNumber);
+                             },
 
-            (aas.Asset as Asset).AssetIdentificationModel = new Reference<ISubmodel>(assetIdentificationSubmodel);
+                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                            {
+                                Value =
+                                {
+                                    new Property<string>("MaintenanceElement","DMU80eVo1"),
+                                    new Property<int>("MaintenanceThreshold",500),
+                                    new Property<string>("MaintenaceCompany","Lauscher"),
+                                    new Property<string>("MaintenanceCompanyLocation","Achen")
+                                }
+                            },
+                             new SubmodelElementCollection("MaintenanceOrderStatus")
+                            {
+                                Value =
+                                {
+                                    new Property<string>("ActualOrderStatus","Default"),
+                                    new BasicEvent("MaintenanceOrderCompetionEvent")
+                                    {
 
-            aas.Submodels.Add(assetIdentificationSubmodel);
+                                    }
+                                }
+                            },
+                              new SubmodelElementCollection("MaintenanceRecord")
+                            {
+                                Value =
+                                {
+                                    new Property<DateTime>("MaintenanceStart",System.DateTime.UtcNow), // type date timeStamp not understood(not found con we suse Date time)
+                                    new Property<DateTime>("MaintenanceEnd"),
+                                    new Property<double>("MaintenanceCompletionTime"),
+                                    new Property<string>("MaintenanceStaff"),
+                                    new Property<double> ( "MaintenanceCost")
+                                }
+                            },
+                    new SubmodelElementCollection("MaintenanceHistory")
+                    {
+                        Value =
+                        {
+                            new Property<int>("MaintenanceCounter",0)
+                        }
+                    }
 
+                }
+            });
+            maintenanceSubmodel.SubmodelElements.Add(new SubmodelElementCollection("Maintenance_3")
+            {
+                Value = {
+                            new SubmodelElementCollection("MaintenanceDetails")
+
+                            {
+                                new Property<string>("OperatingHours","00:00:00"),
+                                new Property<int>("MaintenanceWarning",800),
+                                new Property<int>("MaintenanceThreshold",1000),
+                                new Property<Event>("MaintenanceWarningAlarm"),
+                                new Property<Event>("MaintenanceAlarm")
+
+                             },
+
+                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                            {
+                                Value =
+                                {
+                                    new Property<string>("MaintenanceElement","DMU80eVo1"),
+                                    new Property<int>("MaintenanceThreshold",1000),
+                                    new Property<string>("MaintenaceCompany","Lauscher"),
+                                    new Property<string>("MaintenanceCompanyLocation","Achen")
+                                }
+                            },
+                             new SubmodelElementCollection("MaintenanceOrderStatus")
+                            {
+                                Value =
+                                {
+                                    new Property<string>("ActualOrderStatus","Default"),
+                                    new BasicEvent("MaintenanceOrderCompetionEvent")
+                                    {
+
+                                    }
+                                }
+                            },
+                              new SubmodelElementCollection("MaintenanceRecord")
+                            {
+                                Value =
+                                {
+                                    new Property<DateTime>("MaintenanceStart",System.DateTime.UtcNow), // type date timeStamp not understood(not found con we suse Date time)
+                                    new Property<DateTime>("MaintenanceEnd"),
+                                    new Property<double>("MaintenanceCompletionTime"),
+                                    new Property<string>("MaintenanceStaff"),
+                                    new Property<double> ( "MaintenanceCost")
+                                }
+                            },
+                    new SubmodelElementCollection("MaintenanceHistory")
+                    {
+                        Value =
+                        {
+                            new Property<int>("MaintenanceCounter",0)
+                        }
+                    }
+
+                }
+            });
+
+
+
+
+
+            /*
+                       Submodel operationalDataSubmodel = new Submodel("OperationalDataSubmodel", new BaSyxSubmodelIdentifier("OperationalDataSubmodel", "1.0.0"))
+                        {
+                            Description = new LangStringSet() { new LangString("enS", "This is used to visualize real time operationalvalues") },
+                            Kind = ModelingKind.Instance,
+                            SemanticId = new Reference(new GlobalKey(KeyElements.Submodel, KeyType.IRI, "urn:basys:org.eclipse.basyx:submodels:HelloSubmodel:1.0.0"))
+                        };
+                        operationalDataSubmodel.SubmodelElements.Add(new SubmodelElementCollection("OperationalData")
+                        {
+                            Value =
+                            {
+                                new Property<double>("Temperature", 0),
+                                new Property<double>("humidity",0),
+                                new Property<string>("MachineStatus"),
+
+                            }
+                        });
+
+
+                        aas.Submodels.Add(operationalDataSubmodel);
+                        var assetIdentificationSubmodel = new Submodel("AssetIdentification", new BaSyxSubmodelIdentifier("AssetIdentification", "1.0.0"))
+                        {
+                            Kind = ModelingKind.Instance
+                        };
+
+                        var productTypeProp = new Property<string>("ProductType")
+                        {
+                            SemanticId = new Reference(
+                              new GlobalKey(
+                                  KeyElements.Property,
+                                  KeyType.IRDI,
+                                  "0173-1#02-AAO057#002")),
+                            Value = "HelloAsset_ProductType"
+                        };
+
+                        ConceptDescription orderNumberCD = new ConceptDescription()
+                        {
+                            Identification = new Identifier("0173-1#02-AAO689#001", KeyType.IRDI),
+                            EmbeddedDataSpecifications = new List<IEmbeddedDataSpecification>()
+                            {
+                                new DataSpecificationIEC61360(new DataSpecificationIEC61360Content()
+                                {
+                                    PreferredName = new LangStringSet { new LangString("en", "identifying order number") },
+                                    Definition =  new LangStringSet { new LangString("en", "unique classifying number that enables to name an object and to order it from a supplier or manufacturer") },
+                                    DataType = DataTypeIEC61360.STRING
+                                })
+                            }
+                        };
+
+                        var orderNumber = new Property<string>("OrderNumber")
+                        {
+                            SemanticId = new Reference(
+                                new GlobalKey(
+                                    KeyElements.Property,
+                                    KeyType.IRDI,
+                                    "0173-1#02-AAO689#001")),
+                            Value = "HelloAsset_OrderNumber",
+                            ConceptDescription = orderNumberCD
+                        };
+
+                        var serialNumber = new Property<string>("SerialNumber", "HelloAsset_SerialNumber");
+
+                        assetIdentificationSubmodel.SubmodelElements.Add(productTypeProp);
+                        assetIdentificationSubmodel.SubmodelElements.Add(orderNumber);
+                        assetIdentificationSubmodel.SubmodelElements.Add(serialNumber);
+
+                        (aas.Asset as Asset).AssetIdentificationModel = new Reference<ISubmodel>(assetIdentificationSubmodel);
+
+                        aas.Submodels.Add(assetIdentificationSubmodel);*/
+            aas.Submodels.Add(maintenanceSubmodel);
             return aas;
         }
     }

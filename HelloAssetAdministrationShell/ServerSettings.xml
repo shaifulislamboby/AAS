@@ -5,8 +5,8 @@
       <Environment>Development</Environment>
       <ContentPath>Content</ContentPath>
       <Urls>
-        <Url>http://+:5180</Url>
-        <Url>https://+:5143</Url>
+        <Url>http://0.0.0.0:5180</Url>
+     
       </Urls>
     </Hosting>
     <DefaultRoute/>

@@ -46,5 +46,9 @@
   <ItemGroup>
     <Folder Include="data\" />
   </ItemGroup>
+ 
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\tofu\Source\Repos\I40Extension\I40Extension.csproj" />
+  </ItemGroup>
 
 </Project>

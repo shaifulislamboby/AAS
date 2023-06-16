@@ -15,6 +15,10 @@ using BaSyx.Common.UI.Swagger;
 using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings.Types;
 using HelloAssetAdministrationShell.MqttConnection;
+using HelloAssetAdministrationShell.Services;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Web;
 
@@ -29,7 +33,7 @@ namespace HelloAssetAdministrationShell
         {
             logger.Info("Starting HelloAssetAdministrationShell's HTTP server...");
 
-             MqttClientFunction cl = new MqttClientFunction();
+            
 
             //Loading server configurations settings from ServerSettings.xml;
             ServerSettings serverSettings = ServerSettings.LoadSettingsFromFile("ServerSettings.xml");
@@ -40,12 +44,20 @@ namespace HelloAssetAdministrationShell
             //Configure the entire application to use your own logger library (here: Nlog)
             server.WebHostBuilder.UseNLog();
 
+            server.WebHostBuilder.ConfigureServices(Services => { Services.Singlton<GetDataService>(); });
+            // additional service Registration
+            
+
+
             //Instantiate Asset Administration Shell Service
             HelloAssetAdministrationShellService shellService = new HelloAssetAdministrationShellService();
 
+       //     server.WebHostBuilder.ConfigureServices(services => { services.AddHostedService<GetDataService>(); });
             //Dictate Asset Administration Shell service to use provided endpoints from the server configuration
             shellService.UseAutoEndpointRegistration(serverSettings.ServerConfig);
-
+            //  WebHostBuilder webHostBuilder = new WebHostBuilder();
+          
+          
             //Assign Asset Administration Shell Service to the generic HTTP-REST interface
             server.SetServiceProvider(shellService);
 
@@ -54,8 +66,10 @@ namespace HelloAssetAdministrationShell
 
             //Add BaSyx Web UI
             server.AddBaSyxUI(PageNames.AssetAdministrationShellServer);
+            server.AddBaSyxUI("DashBoard");
+            MqttClientFunction cl = new MqttClientFunction();
 
-            //Action that gets executued when server is fully started
+            //Action that gets executued when server is fully started 
             server.ApplicationStarted = () =>
             {
                 //Use mDNS discovery mechanism in the network. It is used to register at the Registry automatically.
