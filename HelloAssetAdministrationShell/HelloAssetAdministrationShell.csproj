@@ -48,6 +48,11 @@
   </ItemGroup>
  
   <ItemGroup>
+    <None Include="I40Language\I40Extension.csproj" />
+    <None Include="I40Language\I40Extension.sln" />
+  </ItemGroup>
+ 
+  <ItemGroup>
     <ProjectReference Include="C:\Users\tofu\Source\Repos\I40Extension\I40Extension.csproj" />
   </ItemGroup>
 
