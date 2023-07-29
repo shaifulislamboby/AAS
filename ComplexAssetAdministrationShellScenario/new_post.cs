@@ -25,9 +25,7 @@ namespace ComplexAssetAdministrationShellScenario
 
                 // Serialize the processed data back to JSON
                 string responseData = JsonSerializer.Serialize(requestData);
-                Console.WriteLine(requestData);
-                Console.WriteLine(requestData.GetType());
-
+                
                 // Set the response content type to application/json
                 context.Response.ContentType = "application/json";
 
