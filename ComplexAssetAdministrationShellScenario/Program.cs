@@ -32,6 +32,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace ComplexAssetAdministrationShellScenario
 {
@@ -40,6 +43,30 @@ namespace ComplexAssetAdministrationShellScenario
         static RegistryHttpClient registryClient;
         static async Task Main(string[] args)
         {
+            string brokerAddress = "broker.emqx.io";
+            int brokerPort = 1883;
+            string topic = "python/mqtt-test";
+            string message = "Hello, MQTT!";
+
+            // Call the MQTT subscriber function
+
+            // Wait for some time to receive messages (you can adjust this based on your requirements)
+            
+            await Task.Run(async () =>
+            {
+                // Call the MQTT subscriber function
+                await MqttPublisherAndReceiver.MqttSubscribeAsync(brokerAddress, brokerPort, topic);
+
+                // Wait for some time to receive messages (you can adjust this based on your requirements)
+                await Task.Delay(10);
+
+                // Get the received messages from the subscriber
+                List<string> receivedMessages = MqttPublisherAndReceiver.GetReceivedMessages();
+                foreach (var receivedMessage in receivedMessages)
+                {
+                    Console.WriteLine("Received message: " + receivedMessage);
+                }
+            });
             await Task.Delay(5000);
             registryClient = new RegistryHttpClient();
             LoadScenario();
@@ -64,6 +91,25 @@ namespace ComplexAssetAdministrationShellScenario
             submodelRepositorySettings.ServerConfig.Hosting.Urls.Add("https://+:6499");
 
             SubmodelRepositoryHttpServer multiServer = new SubmodelRepositoryHttpServer(submodelRepositorySettings);
+            // Create an instance of the MyPostHandler class
+            MesAasPostHandler postHandler = new MesAasPostHandler();
+
+// Add the POST endpoint
+                //Register the POST endpoint
+                
+            multiServer.WebHostBuilder.Configure(app =>
+            {
+                app.Map("/mes-notification", builder =>
+                {
+                    builder.Use(async (context, next) =>
+                    {
+                        await postHandler.HandlePostRequest(context);
+                    });
+                });
+            });
+
+
+
             multiServer.WebHostBuilder.UseNLog();
             SubmodelRepositoryServiceProvider repositoryService = new SubmodelRepositoryServiceProvider();
 
@@ -218,6 +264,21 @@ namespace ComplexAssetAdministrationShellScenario
             submodelServerSettings.ServerConfig.Hosting.Urls.Add("https://localhost:5422");
 
             SubmodelHttpServer submodelServer = new SubmodelHttpServer(submodelServerSettings);
+            // Create an instance of the MyPostHandler class
+            MesAasPostHandler postHandler = new MesAasPostHandler();
+
+// Add the POST endpoint
+            //Register the POST endpoint
+            submodelServer.WebHostBuilder.Configure(app =>
+            {
+                app.Map("/mes-notification", builder =>
+                {
+                    builder.Use(async (context, next) =>
+                    {
+                        await postHandler.HandlePostRequest(context);
+                    });
+                });
+            });
             submodelServer.WebHostBuilder.UseNLog();
             ISubmodelServiceProvider submodelServiceProvider = testSubmodel.CreateServiceProvider();
             submodelServer.SetServiceProvider(submodelServiceProvider);

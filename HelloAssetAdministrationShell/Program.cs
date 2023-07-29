@@ -15,10 +15,7 @@ using BaSyx.Common.UI.Swagger;
 using BaSyx.Discovery.mDNS;
 using BaSyx.Utils.Settings.Types;
 using HelloAssetAdministrationShell.MqttConnection;
-using HelloAssetAdministrationShell.Services;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 using NLog;
 using NLog.Web;
 
@@ -44,7 +41,7 @@ namespace HelloAssetAdministrationShell
             //Configure the entire application to use your own logger library (here: Nlog)
             server.WebHostBuilder.UseNLog();
 
-            server.WebHostBuilder.ConfigureServices(Services => { Services.Singlton<GetDataService>(); });
+            //server.WebHostBuilder.ConfigureServices(Services => { Services.Singlton<GetDataService>(); });
             // additional service Registration
             
 
