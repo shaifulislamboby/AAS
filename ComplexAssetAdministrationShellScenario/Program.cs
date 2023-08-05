@@ -41,12 +41,10 @@ namespace ComplexAssetAdministrationShellScenario
     class Program
     {
         static RegistryHttpClient registryClient;
+        private static DataStorage mainDataStorage = new DataStorage();
+        private static string pData;
         static async Task Main(string[] args)
         {
-            string brokerAddress = "broker.emqx.io";
-            int brokerPort = 1883;
-            string topic = "python/mqtt-test";
-            string message = "Hello, MQTT!";
 
             // Call the MQTT subscriber function
 
@@ -55,19 +53,16 @@ namespace ComplexAssetAdministrationShellScenario
             await Task.Run(async () =>
             {
                 // Call the MQTT subscriber function
-                await MqttPublisherAndReceiver.MqttSubscribeAsync(brokerAddress, brokerPort, topic);
+                //await MqttPublisherAndReceiver.MqttSubscribeAsync(args[1], int.Parse(args[2]), args[3]);
+                await MqttPublisherAndReceiver.MqttSubscribeAsync(args[1], int.Parse(args[2]), args[3], mainDataStorage, pData);
 
                 // Wait for some time to receive messages (you can adjust this based on your requirements)
                 await Task.Delay(10);
-
                 // Get the received messages from the subscriber
-                List<string> receivedMessages = MqttPublisherAndReceiver.GetReceivedMessages();
-                foreach (var receivedMessage in receivedMessages)
-                {
-                    Console.WriteLine("Received message: " + receivedMessage);
-                }
+                
             });
-            await Task.Delay(5000);
+            
+            await Task.Delay(1);
             registryClient = new RegistryHttpClient();
             LoadScenario();
 
@@ -103,7 +98,7 @@ namespace ComplexAssetAdministrationShellScenario
                 {
                     builder.Use(async (context, next) =>
                     {
-                        await postHandler.HandlePostRequest(context);
+                        await postHandler.HandlePostRequest(context, mainDataStorage);
                     });
                 });
             });
@@ -275,7 +270,7 @@ namespace ComplexAssetAdministrationShellScenario
                 {
                     builder.Use(async (context, next) =>
                     {
-                        await postHandler.HandlePostRequest(context);
+                        await postHandler.HandlePostRequest(context, mainDataStorage);
                     });
                 });
             });

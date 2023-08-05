@@ -11,6 +11,10 @@ namespace ComplexAssetAdministrationShellScenario
     {
         private static MqttClient mqttClient;
         private static List<string> receivedMessages = new List<string>();
+        private static DataStorage mainDataStorage;
+        private static string publishingData;
+        public static string brockerAddress;
+        public static int brockerPort;
 
         private static void InitializeMqttClient(string brokerAddress, int brokerPort)
         {
@@ -18,31 +22,33 @@ namespace ComplexAssetAdministrationShellScenario
             mqttClient.MqttMsgPublishReceived += MqttMsgPublishReceived;
         }
 
-        private static void MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
+        private static async void MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             string message = Encoding.UTF8.GetString(e.Message);
             receivedMessages.Add(message);
             Console.WriteLine("Received message: " + message);
+            await MaintenanceProvoking.call_maintenance_endpoint(message, mainDataStorage, publishingData);
         }
 
-        public static async Task MqttPublishAsync(string brokerAddress, int brokerPort, string topic, string message)
+        public static void MqttPublishAsync(string brokerAddress, int brokerPort, string topic, string message)
         {
+            
+            
             if (mqttClient == null)
             {
                 InitializeMqttClient(brokerAddress, brokerPort);
             }
-
-            string clientId = Guid.NewGuid().ToString();
-            mqttClient.Connect(clientId);
-
             byte[] payload = Encoding.UTF8.GetBytes(message);
             mqttClient.Publish(topic, payload, MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, true);
-
-            mqttClient.Disconnect();
         }
-
-        public static async Task MqttSubscribeAsync(string brokerAddress, int brokerPort, string topic)
+        
+        public static async Task MqttSubscribeAsync(string brokerAddress, int brokerPort, string topic, DataStorage ma, string pubdata)
+        
         {
+            mainDataStorage = ma;
+            publishingData = pubdata;
+            brockerAddress = brokerAddress;
+            brockerPort = brokerPort;
             if (mqttClient == null)
             {
                 InitializeMqttClient(brokerAddress, brokerPort);

@@ -16,7 +16,8 @@ namespace ComplexAssetAdministrationShellScenario
             bool ordered = false,
             bool allowDuplicates = false,
             string kind = "Instance",
-            string conversation_id = "Maintenance_1::1"
+            string conversation_id = "Maintenance_1::1",
+            int message_id = 1
         )
         {
             // Build the JSON object using the provided arguments
@@ -110,7 +111,7 @@ namespace ComplexAssetAdministrationShellScenario
                         Role = new { Name = "InformationReceiver" }
                     },
                     ConversationId = conversation_id,
-                    MessageId = "1",
+                    MessageId = message_id.ToString(),
                     InReplyTo = (object)null,
                     ReplyBy = (object)null,
                     SemanticProtocol = new

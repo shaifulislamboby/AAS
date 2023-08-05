@@ -2,17 +2,17 @@ namespace ComplexAssetAdministrationShellScenario
 {
     using System.Collections.Generic;
 
-    public abstract class ModelType
+    public  class ModelType
     {
         public string Name { get; set; }
     }
 
-    public abstract class SemanticId
+    public  class SemanticId
     {
         public List<object> Keys { get; set; }
     }
 
-    public abstract class MaintenanceElement
+    public  class MaintenanceElement
     {
         public ModelType ModelType { get; set; }
         public List<object> DataSpecification { get; set; }
@@ -26,7 +26,7 @@ namespace ComplexAssetAdministrationShellScenario
         public SemanticId SemanticId { get; set; }
     }
 
-    public abstract class InteractionElement
+    public  class InteractionElement
     {
         public ModelType ModelType { get; set; }
         public List<object> DataSpecification { get; set; }
@@ -46,12 +46,12 @@ namespace ComplexAssetAdministrationShellScenario
         public string IdType { get; set; }
     }
 
-    public abstract class Role
+    public class Role
     {
         public string Name { get; set; }
     }
 
-    public abstract class Sender
+    public class Sender
     {
         public Identification Identification { get; set; }
         public Role Role { get; set; }
@@ -63,12 +63,12 @@ namespace ComplexAssetAdministrationShellScenario
         public Role Role { get; set; }
     }
 
-    public abstract class SemanticProtocol
+    public class SemanticProtocol
     {
         public List<object> Keys { get; set; }
     }
 
-    public abstract class Frame
+    public class Frame
     {
         public string Type { get; set; }
         public Sender Sender { get; set; }
