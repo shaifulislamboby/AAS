@@ -32,18 +32,17 @@ namespace ComplexAssetAdministrationShellScenario
 
         public static void MqttPublishAsync(string brokerAddress, int brokerPort, string topic, string message)
         {
-            
-            
             if (mqttClient == null)
             {
                 InitializeMqttClient(brokerAddress, brokerPort);
             }
+
             byte[] payload = Encoding.UTF8.GetBytes(message);
             mqttClient.Publish(topic, payload, MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, true);
         }
-        
-        public static async Task MqttSubscribeAsync(string brokerAddress, int brokerPort, string topic, DataStorage ma, string pubdata)
-        
+
+        public static async Task MqttSubscribeAsync(string brokerAddress, int brokerPort, string topic, DataStorage ma,
+            string pubdata)
         {
             mainDataStorage = ma;
             publishingData = pubdata;
@@ -56,7 +55,6 @@ namespace ComplexAssetAdministrationShellScenario
 
             string clientId = Guid.NewGuid().ToString();
             mqttClient.Connect(clientId);
-
             byte[] qosLevels = { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE };
             mqttClient.Subscribe(new string[] { topic }, qosLevels);
 

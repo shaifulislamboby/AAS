@@ -20,4 +20,4 @@ RUN dotnet publish "HelloAssetAdministrationShell.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "HelloAssetAdministrationShell.dll"]
+CMD ["dotnet", "HelloAssetAdministrationShell.dll"]

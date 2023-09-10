@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace ComplexAssetAdministrationShellScenario
@@ -22,7 +21,6 @@ namespace ComplexAssetAdministrationShellScenario
             {
                 Dictionary<string, object> existingData = dataDictionary[key];
                 // Handle key collision if necessary (update existing data or throw an exception)
-                // For this example, we will just ignore the duplicate key.
             }
         }
 
@@ -41,6 +39,7 @@ namespace ComplexAssetAdministrationShellScenario
             {
                 return value;
             }
+
             return null;
         }
 

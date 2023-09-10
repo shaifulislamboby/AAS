@@ -1,54 +1,25 @@
+using System.Collections.Generic;
+
 namespace ComplexAssetAdministrationShellScenario
 {
-    using System.Collections.Generic;
-
-    public  class ModelType
+    public class ModelType
     {
         public string Name { get; set; }
     }
 
-    public  class SemanticId
+    public class Property
     {
-        public List<object> Keys { get; set; }
-    }
-
-    public  class MaintenanceElement
-    {
+        public string IdShort { get; set; }
         public ModelType ModelType { get; set; }
-        public List<object> DataSpecification { get; set; }
-        public List<object> EmbeddedDataSpecifications { get; set; }
-        public string Kind { get; set; }
-        public string Value { get; set; }
-        public object ValueId { get; set; }
+        public object Value { get; set; }
         public string ValueType { get; set; }
-        public string IdShort { get; set; }
-        public List<object> Qualifiers { get; set; }
-        public SemanticId SemanticId { get; set; }
     }
 
-    public  class InteractionElement
+    public class InteractionElement
     {
+        public string IdShort { get; set; }
         public ModelType ModelType { get; set; }
-        public List<object> DataSpecification { get; set; }
-        public List<object> EmbeddedDataSpecifications { get; set; }
-        public string Kind { get; set; }
-        public Dictionary<string, MaintenanceElement> Value { get; set; }
-        public bool Ordered { get; set; }
-        public bool AllowDuplicates { get; set; }
-        public string IdShort { get; set; }
-        public List<object> Qualifiers { get; set; }
-        public SemanticId SemanticId { get; set; }
-    }
-
-    public class Identification
-    {
-        public string Id { get; set; }
-        public string IdType { get; set; }
-    }
-
-    public class Role
-    {
-        public string Name { get; set; }
+        public List<Property> Value { get; set; }
     }
 
     public class Sender
@@ -63,9 +34,11 @@ namespace ComplexAssetAdministrationShellScenario
         public Role Role { get; set; }
     }
 
-    public class SemanticProtocol
+    public class SemanticProtocolKey
     {
-        public List<object> Keys { get; set; }
+        public string Type { get; set; }
+        public string IdType { get; set; }
+        public string Value { get; set; }
     }
 
     public class Frame
@@ -74,7 +47,7 @@ namespace ComplexAssetAdministrationShellScenario
         public Sender Sender { get; set; }
         public Receiver Receiver { get; set; }
         public string ConversationId { get; set; }
-        public string MessageId { get; set; }
+        public int MessageId { get; set; }
         public object InReplyTo { get; set; }
         public object ReplyBy { get; set; }
         public SemanticProtocol SemanticProtocol { get; set; }
@@ -84,5 +57,22 @@ namespace ComplexAssetAdministrationShellScenario
     {
         public List<InteractionElement> InteractionElements { get; set; }
         public Frame Frame { get; set; }
+    }
+
+    public class SemanticProtocol
+    {
+        public List<SemanticProtocolKey> Keys { get; set; }
+    }
+
+
+    public class Identification
+    {
+        public string Id { get; set; }
+        public string IdType { get; set; }
+    }
+
+    public class Role
+    {
+        public string Name { get; set; }
     }
 }
