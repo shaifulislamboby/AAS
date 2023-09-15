@@ -352,7 +352,7 @@ namespace SimpleAssetAdministrationShell
                                                     new Property<DateTime>("ActualMaintenanceEnd"),
                                                     new Property<double>("MaintenanceCompletionTime"),
                                                     new Property<string>("MaintenanceStaff"),
-                                                    new Property<double>("MaintenanceCost")
+                                                    new Property<double>("MaintenanceCosts")
                                                 }
                                             },
                                             new SubmodelElementCollection("MaintenanceHistory")
@@ -398,7 +398,7 @@ namespace SimpleAssetAdministrationShell
                                                     new Property<DateTime>("ActualMaintenanceEnd"),
                                                     new Property<double>("MaintenanceCompletionTime"),
                                                     new Property<string>("MaintenanceStaff"),
-                                                    new Property<double>("MaintenanceCost")
+                                                    new Property<double>("MaintenanceCosts")
                                                 }
                                             },
                                             new SubmodelElementCollection("MaintenanceHistory")
@@ -445,7 +445,155 @@ namespace SimpleAssetAdministrationShell
                                                     new Property<DateTime>("ActualMaintenanceEnd"),
                                                     new Property<double>("MaintenanceCompletionTime"),
                                                     new Property<string>("MaintenanceStaff"),
-                                                    new Property<double>("MaintenanceCost")
+                                                    new Property<double>("MaintenanceCosts")
+                                                }
+                                            }, //add rest of the property here   new SubmodelElementCollection("MaintenanceHistory")
+                                            new SubmodelElementCollection("MaintenanceHistory")
+                                            {
+                                                Value = { new Property<int>("MaintenanceCounter", 0) }
+                                            }
+                                        }
+                                    }
+                                }
+                            }, // new Submodel Element Collection
+                            new SubmodelElementCollection("DMU80")
+                            {
+                                Value =
+                                {
+                                    new SubmodelElementCollection("Maintenance_1")
+                                    {
+                                        Value =
+                                        {
+                                            new SubmodelElementCollection("MaintenanceDetails")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceName",
+                                                        "250HourMaintenance"),
+                                                    new Property<int>("MaintenanceInterval", 250)
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceElement",
+                                                        "DMU80"),
+                                                    new Property<int>("MaintenanceThreshold", 250),
+                                                    new Property<string>("MaintenanceCompany",
+                                                        "Lauscher"),
+                                                    new Property<string>("MaintenanceCompanyLocation",
+                                                        "Achen")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderStatus")
+                                            {
+                                                Value = { new Property<string>("ActualOrderStatus") }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceRecord")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                                    new Property<double>("MaintenanceCompletionTime"),
+                                                    new Property<string>("MaintenanceStaff"),
+                                                    new Property<double>("MaintenanceCosts")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceHistory")
+                                            {
+                                                Value = { new Property<int>("MaintenanceCounter", 0) }
+                                            }
+                                        }
+                                    },
+                                    new SubmodelElementCollection("Maintenance_2")
+                                    {
+                                        Value =
+                                        {
+                                            new SubmodelElementCollection("MaintenanceDetails")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceName",
+                                                        "500HourMaintenance"),
+                                                    new Property<int>("MaintenanceInterval", 500)
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceElement", "DMU80"),
+                                                    new Property<int>("MaintenanceThreshold", 500),
+                                                    new Property<string>("MaintenanceCompany", "Lauscher"),
+                                                    new Property<string>("MaintenanceCompanyLocation", "Achen")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderStatus")
+                                            {
+                                                Value = { new Property<string>("ActualOrderStatus") }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceRecord")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                                    new Property<double>("MaintenanceCompletionTime"),
+                                                    new Property<string>("MaintenanceStaff"),
+                                                    new Property<double>("MaintenanceCosts")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceHistory")
+                                            {
+                                                Value = { new Property<int>("MaintenanceCounter", 0) }
+                                            }
+                                            //add new Values here 
+                                        }
+                                    },
+                                    new SubmodelElementCollection("Maintenance_3")
+                                    {
+                                        Value =
+                                        {
+                                            new SubmodelElementCollection("MaintenanceDetails")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceName",
+                                                        "1000HourMaintenance"),
+                                                    new Property<int>("MaintenanceInterval", 1000)
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceElement", "DMU80"),
+                                                    new Property<int>("MaintenanceThreshold", 1000),
+                                                    new Property<string>("MaintenanceCompany", "Lauscher"),
+                                                    new Property<string>("MaintenanceCompanyLocation", "Achen")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderStatus")
+                                            {
+                                                Value = { new Property<string>("ActualOrderStatus") }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceRecord")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                                    new Property<double>("MaintenanceCompletionTime"),
+                                                    new Property<string>("MaintenanceStaff"),
+                                                    new Property<double>("MaintenanceCosts")
                                                 }
                                             }, //add rest of the property here   new SubmodelElementCollection("MaintenanceHistory")
                                             new SubmodelElementCollection("MaintenanceHistory")
@@ -491,12 +639,13 @@ namespace SimpleAssetAdministrationShell
                                             {
                                                 Value =
                                                 {
-                                                    new Property<DateTime>(
-                                                        "MaintenanceStart"), // type date timeStamp not understood(not found con we suse Date time)
-                                                    new Property<DateTime>("MaintenanceEnd"),
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
                                                     new Property<double>("MaintenanceCompletionTime"),
                                                     new Property<string>("MaintenanceStaff"),
-                                                    new Property<double>("MaintenanceCost")
+                                                    new Property<double>("MaintenanceCosts")
                                                 }
                                             },
                                             new SubmodelElementCollection("MaintenanceHistory")
@@ -536,12 +685,13 @@ namespace SimpleAssetAdministrationShell
                                             {
                                                 Value =
                                                 {
-                                                    new Property<DateTime>(
-                                                        "MaintenanceStart"), // type date timeStamp not understood(not found con we suse Date time)
-                                                    new Property<DateTime>("MaintenanceEnd"),
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
                                                     new Property<double>("MaintenanceCompletionTime"),
                                                     new Property<string>("MaintenanceStaff"),
-                                                    new Property<double>("MaintenanceCost")
+                                                    new Property<double>("MaintenanceCosts")
                                                 }
                                             },
                                             new SubmodelElementCollection("MaintenanceHistory")
@@ -582,12 +732,157 @@ namespace SimpleAssetAdministrationShell
                                             {
                                                 Value =
                                                 {
-                                                    new Property<DateTime>(
-                                                        "MaintenanceStart"), // type date timeStamp not understood(not found con we suse Date time)
-                                                    new Property<DateTime>("MaintenanceEnd"),
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
                                                     new Property<double>("MaintenanceCompletionTime"),
                                                     new Property<string>("MaintenanceStaff"),
-                                                    new Property<double>("MaintenanceCost")
+                                                    new Property<double>("MaintenanceCosts")
+                                                }
+                                            }, //add rest of the property here   new SubmodelElementCollection("MaintenanceHistory")
+                                            new SubmodelElementCollection("MaintenanceHistory")
+                                            {
+                                                Value = { new Property<int>("MaintenanceCounter", 0) }
+                                            }
+                                        }
+                                    }
+                                }
+                            }, new SubmodelElementCollection("DMU80eVo")
+                            {
+                                Value =
+                                {
+                                    new SubmodelElementCollection("Maintenance_1")
+                                    {
+                                        Value =
+                                        {
+                                            new SubmodelElementCollection("MaintenanceDetails")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceName",
+                                                        "250HourMaintenance"),
+                                                    new Property<int>("MaintenanceInterval", 250)
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceElement", "DMU80eVo"),
+                                                    new Property<int>("MaintenanceThreshold", 250),
+                                                    new Property<string>("MaintenanceCompany", "Lauscher"),
+                                                    new Property<string>("MaintenanceCompanyLocation", "Achen")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderStatus")
+                                            {
+                                                Value = { new Property<string>("ActualOrderStatus") }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceRecord")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                                    new Property<double>("MaintenanceCompletionTime"),
+                                                    new Property<string>("MaintenanceStaff"),
+                                                    new Property<double>("MaintenanceCosts")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceHistory")
+                                            {
+                                                Value = { new Property<int>("MaintenanceCounter", 0) }
+                                            }
+                                        }
+                                    },
+                                    new SubmodelElementCollection("Maintenance_2")
+                                    {
+                                        Value =
+                                        {
+                                            new SubmodelElementCollection("MaintenanceDetails")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceName",
+                                                        "250HourMaintenance"),
+                                                    new Property<int>("MaintenanceInterval", 250)
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceElement", "DMU80eVo1"),
+                                                    new Property<int>("MaintenanceThreshold", 250),
+                                                    new Property<string>("MaintenanceCompany", "Lauscher"),
+                                                    new Property<string>("MaintenanceCompanyLocation", "Achen")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderStatus")
+                                            {
+                                                Value = { new Property<string>("ActualOrderStatus") }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceRecord")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                                    new Property<double>("MaintenanceCompletionTime"),
+                                                    new Property<string>("MaintenanceStaff"),
+                                                    new Property<double>("MaintenanceCosts")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceHistory")
+                                            {
+                                                Value = { new Property<int>("MaintenanceCounter", 0) }
+                                            }
+                                            //add new Values here 
+                                        }
+                                    },
+                                    new SubmodelElementCollection("Maintenance_3")
+                                    {
+                                        Value =
+                                        {
+                                            new SubmodelElementCollection("MaintenanceDetails")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceName",
+                                                        "250HourMaintenance"),
+                                                    new Property<int>("MaintenanceInterval", 250)
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderDescription")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<string>("MaintenanceElement", "DMU80eVo1"),
+                                                    new Property<int>("MaintenanceThreshold", 250),
+                                                    new Property<string>("MaintenanceCompany", "Lauscher"),
+                                                    new Property<string>("MaintenanceCompanyLocation", "Achen")
+                                                }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceOrderStatus")
+                                            {
+                                                Value = { new Property<string>("ActualOrderStatus") }
+                                            },
+                                            new SubmodelElementCollection("MaintenanceRecord")
+                                            {
+                                                Value =
+                                                {
+                                                    new Property<DateTime>("PlannedMaintenanceStart"),
+                                                    new Property<DateTime>("PlannedMaintenanceEnd"),
+                                                    new Property<DateTime>("ActualMaintenanceStart"),
+                                                    new Property<DateTime>("ActualMaintenanceEnd"),
+                                                    new Property<double>("MaintenanceCompletionTime"),
+                                                    new Property<string>("MaintenanceStaff"),
+                                                    new Property<double>("MaintenanceCosts")
                                                 }
                                             }, //add rest of the property here   new SubmodelElementCollection("MaintenanceHistory")
                                             new SubmodelElementCollection("MaintenanceHistory")

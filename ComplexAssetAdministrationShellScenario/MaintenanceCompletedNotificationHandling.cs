@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using BaSyx.Models.Core.AssetAdministrationShell.Generics;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
+using ComplexAssetAdministrationShellScenario.Serializers;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using JsonException = System.Text.Json.JsonException;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ComplexAssetAdministrationShellScenario
 {
@@ -16,6 +22,8 @@ namespace ComplexAssetAdministrationShellScenario
         public DateTime ActualMaintenanceStart { get; set; }
         public DateTime ActualMaintenanceEnd { get; set; }
         public int MaintenanceDuration { get; set; }
+        public string? MaintenanceStaff { get; set; }
+        public double? MaintenanceCosts { get; set; }
     }
 
     public class MesAasPostHandler
@@ -35,7 +43,10 @@ namespace ComplexAssetAdministrationShellScenario
         "MaintenanceThreshold": 500,
         "ActualMaintenanceStart": "2023-04-29T14:17:49.13",
         "ActualMaintenanceEnd": "2023-04-30T08:10:21.13",
-	     "MaintenanceDuration": 3600
+	     "MaintenanceDuration": 3600,
+	     "MaintenanceStaff": "",
+	     "MaintenanceCost: 222,
+	     "":
 }
                  */
 
@@ -71,7 +82,6 @@ namespace ComplexAssetAdministrationShellScenario
                 MaintenanceActions.UpdateMaintenanceRecordForCompletionMessage(requestData);
                 var mt = MaintenanceType.GetMaintenanceType(requestData.MaintenanceThreshold);
                 var ie = MaintenanceActions.GetMaintenanceRecord(requestData.MachineName, mt);
-                List<string> iel = new List<string> { ie };
                 var rDictionary = dataStorage.dataDictionary[requestData.ConversationId];
                 object receiver = null;
                 if (rDictionary.TryGetValue("receiver", out var value))
@@ -81,15 +91,23 @@ namespace ComplexAssetAdministrationShellScenario
                 }
 
                 object data = rDictionary["data"];
-                var publishingChange = RootObjectBuilder.CreateRootJson(interactionElement: iel,
-                    conversationId: requestData.ConversationId, messageId: int.Parse(requestData.MessageId),
-                    receiver: receiver.ToString(), messageType: "change");
+                I40Message outBoundMessage = new I40Message();
+                
+
+                var frame = FrameBuilder.CreateFrame(receiver: receiver.ToString(), conversationId: requestData.ConversationId, messageId: Int32.Parse(requestData.MessageId),
+                    messageType: "CHANGE");
+                outBoundMessage.frame = frame;
+                outBoundMessage.interactionElements = ie;
+                string outBoundMessageString = JsonConvert.SerializeObject(outBoundMessage);
+                //var publishingChange = RootObjectBuilder.CreateRootJson(interactionElement: ie,
+                  //  conversationId: requestData.ConversationId, messageId: int.Parse(requestData.MessageId),
+                    //receiver: receiver.ToString(), messageType: "change");
                 try
                 {
                     _ = Task.Run(() =>
                     {
                         MqttPublisherAndReceiver.MqttPublishAsync(MqttPublisherAndReceiver.brockerAddress,
-                            MqttPublisherAndReceiver.brockerPort, "aas-notification", publishingChange);
+                            MqttPublisherAndReceiver.brockerPort, "aas-notification", outBoundMessageString);
                         return Task.CompletedTask;
                     });
                 }

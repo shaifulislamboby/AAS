@@ -12,11 +12,12 @@
     <Company>Robert Bosch GmbH</Company>
     <PackageTags>BaSys BaSyx Complex Asset Administration Shell Scenario</PackageTags>
     <PackageLicenseExpression>EDL-1.0</PackageLicenseExpression>
+    <UserSecretsId>4fa7da4e-8390-40b0-9cd5-de2479f1fcef</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="M2Mqtt" Version="4.3.0" />
-    <PackageReference Include="BaSyx.Models" Version="*" />
+    <PackageReference Include="BaSyx.Models" Version="1.0.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
     <PackageReference Include="BaSyx.AAS.Server.Http" Version="1.0.0" />
     <PackageReference Include="BaSyx.AAS.Client.Http" Version="1.0.0" />

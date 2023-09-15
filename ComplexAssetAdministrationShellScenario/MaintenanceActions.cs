@@ -5,6 +5,7 @@ using BaSyx.AAS.Client.Http;
 using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using BaSyx.Models.Core.Common;
 using BaSyx.Models.Extensions;
+using Newtonsoft.Json;
 
 
 namespace ComplexAssetAdministrationShellScenario
@@ -211,15 +212,16 @@ namespace ComplexAssetAdministrationShellScenario
             else Console.WriteLine("Unable to update record");
         }
 
-        public static string GetMaintenanceRecord(string machineName, string maintenanceType)
+        public static List<SubmodelElementCollection> GetMaintenanceRecord(string machineName, string maintenanceType)
         {
             var currentElement = Client.RetrieveSubmodelElement("MaintenanceOrderHandlingSubmodel",
                 string.Concat(machineName, "/", maintenanceType, "/", "MaintenanceRecord"));
             var resultJson = currentElement.Entity.ToJson();
-            return resultJson;
-            //var subModelElementCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(resultJson);
-            //InteractionElement.Insert(0, subModelElementCollection);
-            //return InteractionElement;
+            var subModelElementCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(resultJson);
+            
+            InteractionElement.Insert(0, subModelElementCollection);
+            return InteractionElement;
         }
+        
     }
 }

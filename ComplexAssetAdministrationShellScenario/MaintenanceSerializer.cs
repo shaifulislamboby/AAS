@@ -11,6 +11,7 @@ namespace ComplexAssetAdministrationShellScenario
 
         [JsonPropertyName("MaintenanceThreshold")]
         public int MaintenanceThreshold { get; set; }
+        
 
         [JsonPropertyName("PlannedMaintenanceStart")]
         public string PlannedMaintenanceStart { get; set; } = DateTime.Now.ToString();
