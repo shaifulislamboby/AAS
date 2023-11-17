@@ -6,20 +6,20 @@
   },
   "endpoints": [
     {
-      "address": "http://localhost:5222/submodel",
+      "address": "http://172.30.144.1:5222/submodel",
       "type": "http"
     },
     {
-      "address": "https://localhost:5422/submodel",
-      "type": "https"
-    },
-    {
-      "address": "http://localhost:5111/aas/submodels/TestSubmodel/submodel",
+      "address": "http://192.168.0.103:5222/submodel",
       "type": "http"
     },
     {
-      "address": "https://localhost:5411/aas/submodels/TestSubmodel/submodel",
-      "type": "https"
+      "address": "http://172.30.144.1:5111/aas/submodels/TestSubmodel/submodel",
+      "type": "http"
+    },
+    {
+      "address": "http://192.168.0.103:5111/aas/submodels/TestSubmodel/submodel",
+      "type": "http"
     }
   ],
   "modelType": {

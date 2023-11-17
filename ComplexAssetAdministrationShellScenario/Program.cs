@@ -31,11 +31,13 @@ using BaSyx.Utils.Settings.Types;
 using NLog.Web;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace ComplexAssetAdministrationShellScenario
 {
@@ -44,19 +46,32 @@ namespace ComplexAssetAdministrationShellScenario
         private static RegistryHttpClient registryClient;
         private static DataStorage mainDataStorage = new DataStorage();
         private static string pData;
+        public static IConfiguration Configuration { get; set; }
 
         private static async Task Main(string[] args)
         {
             // Call the MQTT subscriber function
 
             // Wait for some time to receive messages (you can adjust this based on your requirements)
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables() // Allows overriding settings with environment variables
+                .Build();
+            
 
             await Task.Run(async () =>
             {
                 // Call the MQTT subscriber function
                 //await MqttPublisherAndReceiver.MqttSubscribeAsync(args[1], int.Parse(args[2]), args[3]);
                 //await MqttPublisherAndReceiver.MqttSubscribeAsync(args[1], int.Parse(args[2]), args[3], mainDataStorage, pData);
-                await MqttPublisherAndReceiver.MqttSubscribeAsync("test.mosquitto.org", 1883, "BasyxMesAASOrderHandling", mainDataStorage,
+                //string mqttBrokerAddress = Configuration["MQTT_BROKER_ADDRESS"];
+                string BrokerAddress = Configuration["MES_APPLICATION_CONFIG:BROKER_ADDRESS"];
+                int BrokerPort = Int32.Parse(Configuration["MES_APPLICATION_CONFIG:BROKER_PORT"]);
+                string SubsciptionTopic = Configuration["MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC"];
+                Console.WriteLine(BrokerAddress);
+                
+                await MqttPublisherAndReceiver.MqttSubscribeAsync(BrokerAddress, BrokerPort, SubsciptionTopic, mainDataStorage,
                     pData);
 
                 // Wait for some time to receive messages (you can adjust this based on your requirements)
@@ -265,25 +280,15 @@ namespace ComplexAssetAdministrationShellScenario
 
             var submodelServerSettings = ServerSettings.CreateSettings();
             submodelServerSettings.ServerConfig.Hosting.ContentPath = "Content";
-            submodelServerSettings.ServerConfig.Hosting.Urls.Add("http://localhost:5222");
-            submodelServerSettings.ServerConfig.Hosting.Urls.Add("https://localhost:5422");
+            submodelServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5222");
+            submodelServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5422");
 
             var submodelServer = new SubmodelHttpServer(submodelServerSettings);
+            
             // Create an instance of the MyPostHandler class
-            var postHandler = new MesAasPostHandler();
+         
             // Add the POST endpoint
             //Register the POST endpoint
-            submodelServer.WebHostBuilder.Configure(app =>
-            {
-                app.Map("/mes-notification",
-                    builder =>
-                    {
-                        builder.Use(async (context, next) =>
-                        {
-                            await postHandler.HandlePostRequest(context, mainDataStorage);
-                        });
-                    });
-            });
             submodelServer.WebHostBuilder.UseNLog();
             var submodelServiceProvider = testSubmodel.CreateServiceProvider();
             submodelServer.SetServiceProvider(submodelServiceProvider);
@@ -294,8 +299,8 @@ namespace ComplexAssetAdministrationShellScenario
 
             var aasServerSettings = ServerSettings.CreateSettings();
             aasServerSettings.ServerConfig.Hosting.ContentPath = "Content";
-            aasServerSettings.ServerConfig.Hosting.Urls.Add("http://localhost:5111");
-            aasServerSettings.ServerConfig.Hosting.Urls.Add("https://localhost:5411");
+            aasServerSettings.ServerConfig.Hosting.Urls.Add("http://+:5111");
+            aasServerSettings.ServerConfig.Hosting.Urls.Add("https://+:5411");
 
             var aasServiceProvider = aas.CreateServiceProvider(true);
             aasServiceProvider.SubmodelRegistry.RegisterSubmodelServiceProvider(testSubmodel.IdShort,
@@ -326,8 +331,8 @@ namespace ComplexAssetAdministrationShellScenario
             {
                 Urls = new List<string>()
                 {
-                    "http://localhost:4999",
-                    "https://localhost:4499"
+                    "http://+:4999",
+                    "https://+:4499"
                 },
                 Environment = "Development",
                 ContentPath = "Content"

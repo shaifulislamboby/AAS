@@ -154,7 +154,7 @@ namespace ComplexAssetAdministrationShellScenario
             if (properties == null)
             {
                 properties = new string[]
-                    { "MaintenanceThreshold", "ActualMaintenanceStart", "ActualMaintenanceEnd", "MaintenanceDuration" };
+                    { "MaintenanceThreshold", "ActualMaintenanceStart", "ActualMaintenanceEnd", "MaintenanceDuration","MaintenanceStaff","MaintenanceCosts" };
             }
 
             foreach (var variable in properties)
@@ -163,8 +163,8 @@ namespace ComplexAssetAdministrationShellScenario
                 PropertyInfo propertyInfo = maintenanceData.GetType().GetProperty(modifiedVariable);
                 object propertyValue = propertyInfo?.GetValue(maintenanceData);
                 if (propertyValue == null)
-                {
-                    // Set default datetime as year 1000
+               {
+                   /*  // Set default datetime as year 1000
                     if (variable == "MaintenanceDuration")
                     {
                         propertyValue = 00.00;
@@ -172,7 +172,7 @@ namespace ComplexAssetAdministrationShellScenario
                     else
                     {
                         propertyValue = new DateTime(0001, 01, 01);
-                    }
+                    }*/
                 }
 
                 IValue updatedValue = new ElementValue(propertyValue);

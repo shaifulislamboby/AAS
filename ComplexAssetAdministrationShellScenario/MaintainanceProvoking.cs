@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using ComplexAssetAdministrationShellScenario.Serializers;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -11,8 +12,8 @@ namespace ComplexAssetAdministrationShellScenario
 {
     public static class OrderStatus
     {
-        public static string OrderReceived = "OrderReceived";
         public static string OrderAccepted = "OrderAccepted";
+        public static string AASOrderCompletionNotification = "AASOrderCompletionNotification";
         public static string OrderCompleted = "OrderCompleted";
     }
 
@@ -53,13 +54,45 @@ namespace ComplexAssetAdministrationShellScenario
                 
                 dataDictionary = new Dictionary<string, object>();
 
-                if (_data.frame.messageType == "RESPOND")
+                if (_data.frame.type == "RESPOND")
                 {
-                    //
+                    if (!storage.dataDictionary.ContainsKey(_conversationId))
+                    {
+                        var data = storage.dataDictionary[_conversationId];
+                        bool value = data.ContainsKey("OrderStatus");
+                        if (value == true && data["OrderStatus"] == OrderStatus.AASOrderCompletionNotification)
+                        {
+                            data["OrderStatus"] = OrderStatus.OrderCompleted;
+                        }
+                        
+                        
+                    }
+                    else
+                    {
+                        HandleNotifyInit();
+                    }
+                    
                 }
-                else
-                {
-                    HandleNotifyInit();
+                if(_data.frame.type == "NOTIFY_INIT")
+                {  if (storage.dataDictionary.ContainsKey(_conversationId))
+                    {
+                       var data = storage.dataDictionary[_conversationId];
+                       bool value = data.ContainsKey("OrderStatus");
+                       if (value == true && data["OrderStatus"] == OrderStatus.OrderAccepted)
+                       {
+                           //
+                       }
+                       else
+                       {
+                           
+                       }
+                        
+                    }
+                    else
+                    {
+                        HandleNotifyInit();
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -69,14 +102,8 @@ namespace ComplexAssetAdministrationShellScenario
 
             async void HandleNotifyInit()
             {
-                dataDictionary.Add("data", _data);
-                dataDictionary.Add("messageId", messageId);
-                dataDictionary.Add("maintenanceThreshold", maintenanceThreshold);
-                dataDictionary.Add("machineName", machineName);
-                dataDictionary.Add("OrderStatus", OrderStatus.OrderReceived);
-                dataDictionary.Add("receiver", _data.frame.sender.identification.id);
-                storage.SaveData(_conversationId, dataDictionary);
-                string url = "https://da80-2003-c4-bf08-e590-8d85-1a78-c5a4-e998.ngrok.io/eai/EAI_BaSys_L?MACHINE_ID=4"; // Replace with the actual API endpoint URL
+               
+                string url =Program.Configuration["MES_APPLICATION_CONFIG:MES_ENDPOINT"]; 
                 string Data =
                     $"{{ \"ConversationId\": \"{_conversationId}\", \"MessageId\": \"{messageId}\", \"MachineName\": \"{machineName}\", \"MaintenanceThreshold\": {maintenanceThreshold} }}";
 
@@ -88,18 +115,30 @@ namespace ComplexAssetAdministrationShellScenario
 
                     // Check if the request was successful
                     if (response.IsSuccessStatusCode)
-                    {
+                    { 
+                        // Order accepted
+                        // --------- step oen : empty storage, request, 1, mes-aas --> MES , success, save data with accepted status
+                        dataDictionary.Add("data", _data);
+                        dataDictionary.Add("messageId", messageId);
+                        dataDictionary.Add("maintenanceThreshold", maintenanceThreshold);
+                        dataDictionary.Add("machineName", machineName);
+                        dataDictionary.Add("OrderStatus", OrderStatus.OrderAccepted);
+                        dataDictionary.Add("receiver", _data.frame.sender.identification.id);
+                        // data saving point, initial point
+                        storage.SaveData(_conversationId, dataDictionary);
+                        
                         Console.WriteLine("POST request successful!");
                         string responseContent = await response.Content.ReadAsStringAsync();
                         string outBoundMessageString = String.Empty;
                         try
                         {
                             MaintenanceSerializer maintenanceData = JsonConvert.DeserializeObject<MaintenanceSerializer>(responseContent);
-                            // todo: here Rafiul will this line so that we can dynamically update url
-                            MaintenanceActions.MaintenanceActionsInitialization(url = "http://localhost:5111");
+                            MaintenanceActions.MaintenanceActionsInitialization(url = "http://127.0.0.1:5111");
                             MaintenanceActions.UpdateMaintenanceRecord(maintenanceData);
                             storage.ModifyInnerValue(maintenanceData.ConversationId, "messageId",
                                 maintenanceData.MessageId);
+                            storage.ModifyInnerValue(maintenanceData.ConversationId, "OrderStatus",
+                                OrderStatus.OrderAccepted);
                             Console.WriteLine(maintenanceData.MessageId);
                             I40Message outBoundMessage = new I40Message();
                             var mt = MaintenanceType.GetMaintenanceType(int.Parse(maintenanceThreshold));
@@ -118,14 +157,12 @@ namespace ComplexAssetAdministrationShellScenario
                             Console.WriteLine(e);
                         }
                         
-
-                       
                         try
                         {
                             _ = Task.Run(() =>
                             {
                                 MqttPublisherAndReceiver.MqttPublishAsync(MqttPublisherAndReceiver.brockerAddress,
-                                    MqttPublisherAndReceiver.brockerPort, "aas-notification",outBoundMessageString);
+                                    MqttPublisherAndReceiver.brockerPort,Program.Configuration["MES_APPLICATION_CONFIG:PUBLICATION_TOPIC"] ,outBoundMessageString);
                                 return Task.CompletedTask;
                             });
                         }
