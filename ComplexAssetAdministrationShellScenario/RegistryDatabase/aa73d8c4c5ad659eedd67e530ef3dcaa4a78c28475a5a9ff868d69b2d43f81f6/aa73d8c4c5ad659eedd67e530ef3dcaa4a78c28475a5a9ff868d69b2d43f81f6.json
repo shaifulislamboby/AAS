@@ -20,12 +20,12 @@
   ],
   "endpoints": [
     {
-      "address": "http://localhost:5111/aas",
+      "address": "http://172.30.144.1:5111/aas",
       "type": "http"
     },
     {
-      "address": "https://localhost:5411/aas",
-      "type": "https"
+      "address": "http://192.168.0.103:5111/aas",
+      "type": "http"
     }
   ],
   "modelType": {

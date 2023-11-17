@@ -1,9 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json;
-using BaSyx.Models.Core.AssetAdministrationShell.Generics;
-using BaSyx.Models.Core.AssetAdministrationShell.Identification;
-using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
-using ComplexAssetAdministrationShellScenario;
 
 namespace ComplexAssetAdministrationShellScenario
 {

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using BaSyx.Models.Core.AssetAdministrationShell.Generics;
-using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using ComplexAssetAdministrationShellScenario.Serializers;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -28,29 +26,55 @@ namespace ComplexAssetAdministrationShellScenario
 
     public class MesAasPostHandler
     {
+        private async Task RetryPolicy(string retryMessage, string conversationId, DataStorage dataStorage)
+        {
+            Console.WriteLine("RetryPolicy started");
+
+            for (int retry = 0; retry < 5; retry++)
+            {
+                await Task.Delay(5000);
+                var rDictionary = dataStorage.dataDictionary[conversationId];
+
+
+                if (rDictionary["OrderStatus"] == OrderStatus.AASOrderCompletionNotification)
+                {
+                    try
+                    {
+                        _ = Task.Run(() =>
+                        {
+                            MqttPublisherAndReceiver.MqttPublishAsync(MqttPublisherAndReceiver.brockerAddress,
+                                MqttPublisherAndReceiver.brockerPort,
+                                Program.Configuration["MES_APPLICATION_CONFIG:PUBLICATION_TOPIC"], retryMessage);
+                            return Task.CompletedTask;
+                        });
+                        rDictionary["OrderStatus"] = OrderStatus.AASOrderCompletionNotification;
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("publishing got following exceptions: " + e);
+                    }
+
+                }
+
+                if (rDictionary["OrderStatus"] == OrderStatus.OrderCompleted)
+                    
+                {
+                    Console.WriteLine("We are stopping the retry policy for ////// : conversation id: " + conversationId);
+                    break;
+                    
+
+                }
+            }
+        }
+
         public async Task HandlePostRequest(HttpContext context, DataStorage dataStorage)
         {
             try
             {
                 // Read the request body
                 string requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
-                /* data --->>>  
-                /* data --->>>  
-                 * {
-        "conversationId": "DMU80eVo1_500_Maintenance1::1",        
-        "MessageId": "3",
-        "MachineName": "DMU80eVo1",
-        "MaintenanceThreshold": 500,
-        "ActualMaintenanceStart": "2023-04-29T14:17:49.13",
-        "ActualMaintenanceEnd": "2023-04-30T08:10:21.13",
-	     "MaintenanceDuration": 3600,
-	     "MaintenanceStaff": "",
-	     "MaintenanceCost: 222,
-	     "":
-}
-                 */
-
-                // Check if the request body is not null or empty
+                
                 if (string.IsNullOrEmpty(requestBody))
                 {
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -77,13 +101,16 @@ namespace ComplexAssetAdministrationShellScenario
                 string conversationId = requestData.ConversationId;
                 string messageId = requestData.MessageId;
                 //
-                MaintenanceActions.MaintenanceActionsInitialization("http://localhost:5111");
+                MaintenanceActions.MaintenanceActionsInitialization(Program.Configuration["MES_APPLICATION_CONFIG:MES_AAS_ENDPOINT"]);
                 // this line is updating the value in the MES-AAS server. 
+                
                 MaintenanceActions.UpdateMaintenanceRecordForCompletionMessage(requestData);
                 var mt = MaintenanceType.GetMaintenanceType(requestData.MaintenanceThreshold);
                 var ie = MaintenanceActions.GetMaintenanceRecord(requestData.MachineName, mt);
-                var rDictionary = dataStorage.dataDictionary[requestData.ConversationId];
-                object receiver = null;
+                try
+                {
+                    var rDictionary = dataStorage.dataDictionary[requestData.ConversationId];
+                    object receiver = null;
                 if (rDictionary.TryGetValue("receiver", out var value))
                 {
                     receiver = value;
@@ -99,25 +126,26 @@ namespace ComplexAssetAdministrationShellScenario
                 outBoundMessage.frame = frame;
                 outBoundMessage.interactionElements = ie;
                 string outBoundMessageString = JsonConvert.SerializeObject(outBoundMessage);
-                //var publishingChange = RootObjectBuilder.CreateRootJson(interactionElement: ie,
-                  //  conversationId: requestData.ConversationId, messageId: int.Parse(requestData.MessageId),
-                    //receiver: receiver.ToString(), messageType: "change");
                 try
                 {
                     _ = Task.Run(() =>
                     {
                         MqttPublisherAndReceiver.MqttPublishAsync(MqttPublisherAndReceiver.brockerAddress,
-                            MqttPublisherAndReceiver.brockerPort, "aas-notification", outBoundMessageString);
+                            MqttPublisherAndReceiver.brockerPort, Program.Configuration["MES_APPLICATION_CONFIG:PUBLICATION_TOPIC"], outBoundMessageString);
                         return Task.CompletedTask;
                     });
+                    rDictionary["OrderStatus"] = OrderStatus.AASOrderCompletionNotification;
+                    RetryPolicy(outBoundMessageString, conversationId, dataStorage);
+
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("publishing got following exceptions: " + e);
                 }
+                Console.WriteLine(outBoundMessageString);
 
                 // Serialize the processed data back to JSON
-                string responseData = JsonSerializer.Serialize(requestData);
+                
 
                 // Set the response content type to application/json
                 context.Response.ContentType = "application/json";
@@ -126,9 +154,20 @@ namespace ComplexAssetAdministrationShellScenario
                 context.Response.StatusCode = StatusCodes.Status200OK;
 
                 // Write the JSON data as the response body
+               
+                    
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+                string responseData = JsonSerializer.Serialize(requestData);
                 await context.Response.WriteAsync(
                     "Your POST request has been processed successfully and we received this data from your side: " +
                     responseData);
+               
+                
             }
             catch (JsonException)
             {
