@@ -55,8 +55,8 @@ namespace ComplexAssetAdministrationShellScenario
             // Wait for some time to receive messages (you can adjust this based on your requirements)
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables() // Allows overriding settings with environment variables
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
                 .Build();
             
 

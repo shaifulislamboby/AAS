@@ -1,15 +1,14 @@
 ﻿version: '3.8'
 
 services:
-  myapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: myapp
+  mes_app:
+    image: shaifulali/mes-aas:2023.0.10
+    container_name: mes_app
     ports:
       - "6499:6499"
       - "6999:6999"
       - "5499:5499"
+      - "4999:4999"
       - "5999:5999"
       - "5411:5411"
       - "443:443"
@@ -17,13 +16,14 @@ services:
       - "5222:5222"
       - "5422:5422"
     environment:
-      ASPNETCORE_URLS: "http://+:6999;https://+:6499;http://+:5999;https://+:5499;https://+:443;http://+:5111;https://+:5411"
-      BROKER_ADDRESS: "test.mosquitto.org"
-      BROKER_PORT: "1883"
-      SUBSCRIPTION_TOPIC: "BasyxMesAASOrderHandling"
-      PUBLICATION_TOPIC: "aas-notification"
-      MES_ENDPOINT: "https://b184-141-44-206-87.ngrok-free.app/api/MesOrder/"
-      MES_AAS_ENDPOINT: "http://host.docker.internal:5111"
+      - ASPNETCORE_URLS=http://+:6999;https://+:6499;http://+:5999;https://+:5499;https://+:443;http://+:5111;https://+:5411
+      - MES_APPLICATION_CONFIG:BROKER_ADDRESS=test.mosquitto.org
+      - MES_APPLICATION_CONFIG:BROKER_PORT=1883
+      - MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC=BasyxMesAASOrderHandling
+      - MES_APPLICATION_CONFIG:PUBLICATION_TOPIC=aas-notification
+      # please change the MES endpoint here ----->
+      - MES_APPLICATION_CONFIG:MES_ENDPOINT=https://b184-141-44-206-87.ngrok-free.app/api/MesOrder/
+      - MES_APPLICATION_CONFIG:MES_AAS_ENDPOINT=http://host.docker.internal:5111
     networks:
       - myapp_network
     tty: true

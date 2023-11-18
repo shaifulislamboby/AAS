@@ -86,13 +86,17 @@ namespace ComplexAssetAdministrationShellScenario
                        {
                            
                        }
-                        
                     }
                     else
-                    {
+                    {   try{
                         HandleNotifyInit();
+                        }
+                        catch (Exception ex)
+                        {
+                        Console.WriteLine($"Error occurred during the POST request: {ex.Message}");
+                        }
+
                     }
-                    
                 }
             }
             catch (Exception ex)
@@ -103,7 +107,8 @@ namespace ComplexAssetAdministrationShellScenario
             async void HandleNotifyInit()
             {
                
-                string url =Program.Configuration["MES_APPLICATION_CONFIG:MES_ENDPOINT"]; 
+                string url =Program.Configuration["MES_APPLICATION_CONFIG:MES_ENDPOINT"];
+                Console.WriteLine(url);
                 string Data =
                     $"{{ \"ConversationId\": \"{_conversationId}\", \"MessageId\": \"{messageId}\", \"MachineName\": \"{machineName}\", \"MaintenanceThreshold\": {maintenanceThreshold} }}";
 
@@ -133,7 +138,7 @@ namespace ComplexAssetAdministrationShellScenario
                         try
                         {
                             MaintenanceSerializer maintenanceData = JsonConvert.DeserializeObject<MaintenanceSerializer>(responseContent);
-                            MaintenanceActions.MaintenanceActionsInitialization(url = "http://127.0.0.1:5111");
+                            MaintenanceActions.MaintenanceActionsInitialization(url = Program.Configuration["MES_APPLICATION_CONFIG:MES_AAS_ENDPOINT"]);
                             MaintenanceActions.UpdateMaintenanceRecord(maintenanceData);
                             storage.ModifyInnerValue(maintenanceData.ConversationId, "messageId",
                                 maintenanceData.MessageId);
