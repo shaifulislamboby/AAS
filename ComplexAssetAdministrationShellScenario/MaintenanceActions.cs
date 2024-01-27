@@ -32,7 +32,7 @@ namespace ComplexAssetAdministrationShellScenario
 
     public static class MaintenanceActions
     {
-        public static List<SubmodelElementCollection> InteractionElement = new List<SubmodelElementCollection>();
+        public static List<SubmodelElementCollection> InteractionElements ;
         private static AssetAdministrationShellHttpClient Client { get; set; }
         public static SubmodelElementCollection IValue { get; }
 
@@ -154,7 +154,7 @@ namespace ComplexAssetAdministrationShellScenario
             if (properties == null)
             {
                 properties = new string[]
-                    { "MaintenanceThreshold", "ActualMaintenanceStart", "ActualMaintenanceEnd", "MaintenanceDuration","MaintenanceStaff","MaintenanceCosts" };
+                    { "PlannedMaintenanceEnd","PlannedMaintenanceStart","MaintenanceThreshold", "ActualMaintenanceStart", "ActualMaintenanceEnd", "MaintenanceDuration","MaintenanceStaff","MaintenanceCosts" };
             }
 
             foreach (var variable in properties)
@@ -218,9 +218,9 @@ namespace ComplexAssetAdministrationShellScenario
                 string.Concat(machineName, "/", maintenanceType, "/", "MaintenanceRecord"));
             var resultJson = currentElement.Entity.ToJson();
             var subModelElementCollection = JsonConvert.DeserializeObject<SubmodelElementCollection>(resultJson);
-            
-            InteractionElement.Insert(0, subModelElementCollection);
-            return InteractionElement;
+            InteractionElements = new List<SubmodelElementCollection>();
+           InteractionElements.Add(subModelElementCollection);
+            return InteractionElements;
         }
         
     }

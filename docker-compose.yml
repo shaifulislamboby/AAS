@@ -22,7 +22,7 @@ services:
       - MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC=BasyxMesAASOrderHandling
       - MES_APPLICATION_CONFIG:PUBLICATION_TOPIC=aas-notification
       # please change the MES endpoint here ----->
-      - MES_APPLICATION_CONFIG:MES_ENDPOINT=https://b184-141-44-206-87.ngrok-free.app/api/MesOrder/
+      - MES_APPLICATION_CONFIG:MES_ENDPOINT=http://localhost:7486/api/MesOrder
       - MES_APPLICATION_CONFIG:MES_AAS_ENDPOINT=http://host.docker.internal:5111
     networks:
       - myapp_network

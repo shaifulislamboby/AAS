@@ -48,7 +48,7 @@ namespace ComplexAssetAdministrationShellScenario
                     },
                     role = new Role
                     {
-                        name = "informationReceiver"
+                        name = "InformationReceiver"
                     }
                 },
                 conversationId = conversationId,

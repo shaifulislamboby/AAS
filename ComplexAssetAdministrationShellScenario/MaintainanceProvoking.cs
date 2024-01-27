@@ -14,7 +14,9 @@ namespace ComplexAssetAdministrationShellScenario
     {
         public static string OrderAccepted = "OrderAccepted";
         public static string AASOrderCompletionNotification = "AASOrderCompletionNotification";
+        public static string AASOrderAcceptedNotificationAcknowledged = "AASOrderAcceptedNotificationAcknowledged";
         public static string OrderCompleted = "OrderCompleted";
+        
     }
 
     public class MaintenanceProvoking
@@ -27,6 +29,46 @@ namespace ComplexAssetAdministrationShellScenario
         private static string machineName;
         private static string maintenanceThreshold;
         private static string sender;
+        
+        private static async Task RetryPolicy(string retryMessage, string conversationId, DataStorage dataStorage)
+        {
+            Console.WriteLine("Application is starting retry policy for notify ACCEPTED");
+
+            for (int retry = 0; retry < 5; retry++)
+            {
+                await Task.Delay(5000);
+                var rDictionary = dataStorage.dataDictionary[conversationId];
+
+
+                if (rDictionary["OrderStatus"] == OrderStatus.OrderAccepted)
+                {
+                    try
+                    {
+                        _ = Task.Run(() =>
+                        {
+                            MqttPublisherAndReceiver.MqttPublishAsync(MqttPublisherAndReceiver.brockerAddress,
+                                MqttPublisherAndReceiver.brockerPort,
+                                Program.Configuration["MES_APPLICATION_CONFIG:PUBLICATION_TOPIC"], retryMessage);
+                            return Task.CompletedTask;
+                        });
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("publishing got following exceptions: " + e);
+                    }
+
+                }
+
+                else if (rDictionary["OrderStatus"] == OrderStatus.AASOrderAcceptedNotificationAcknowledged)
+                    
+                {
+                    Console.WriteLine("We are stopping the retry policy for order accepted, conversation id: " + conversationId);
+                    break;
+                }
+                
+            }
+        }
         
         public static async Task call_maintenance_endpoint(string jsonData, DataStorage storage, string realRoot)
         {
@@ -56,7 +98,7 @@ namespace ComplexAssetAdministrationShellScenario
 
                 if (_data.frame.type == "RESPOND")
                 {
-                    if (!storage.dataDictionary.ContainsKey(_conversationId))
+                    if (storage.dataDictionary.ContainsKey(_conversationId))
                     {
                         var data = storage.dataDictionary[_conversationId];
                         bool value = data.ContainsKey("OrderStatus");
@@ -64,13 +106,12 @@ namespace ComplexAssetAdministrationShellScenario
                         {
                             data["OrderStatus"] = OrderStatus.OrderCompleted;
                         }
-                        
-                        
+                        else if(value ==true && data["OrderStatus"] == OrderStatus.OrderAccepted)
+                        {
+                            data["OrderStatus"] = OrderStatus.AASOrderAcceptedNotificationAcknowledged;
+                        }
                     }
-                    else
-                    {
-                        HandleNotifyInit();
-                    }
+         
                     
                 }
                 if(_data.frame.type == "NOTIFY_INIT")
@@ -81,10 +122,6 @@ namespace ComplexAssetAdministrationShellScenario
                        if (value == true && data["OrderStatus"] == OrderStatus.OrderAccepted)
                        {
                            //
-                       }
-                       else
-                       {
-                           
                        }
                     }
                     else
@@ -156,6 +193,8 @@ namespace ComplexAssetAdministrationShellScenario
                             outBoundMessage.interactionElements = ie;
                             outBoundMessageString = JsonConvert.SerializeObject(outBoundMessage);
                             Console.WriteLine(outBoundMessageString);
+                            
+                            
                         }
                         catch (Exception e)
                         {
@@ -170,6 +209,10 @@ namespace ComplexAssetAdministrationShellScenario
                                     MqttPublisherAndReceiver.brockerPort,Program.Configuration["MES_APPLICATION_CONFIG:PUBLICATION_TOPIC"] ,outBoundMessageString);
                                 return Task.CompletedTask;
                             });
+                          
+                            await RetryPolicy(outBoundMessageString,_conversationId,storage);
+
+
                         }
                         catch (Exception e)
                         {

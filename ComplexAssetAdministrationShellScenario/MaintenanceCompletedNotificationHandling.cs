@@ -19,6 +19,27 @@ namespace ComplexAssetAdministrationShellScenario
         public int MaintenanceThreshold { get; set; }
         public DateTime ActualMaintenanceStart { get; set; }
         public DateTime ActualMaintenanceEnd { get; set; }
+        public DateTime PlannedMaintenanceStart { get; set; }
+        public DateTime PlannedMaintenanceEnd { get; set; }
+        /*
+        {
+    [3:35 PM] Luan Salaj
+{
+    "MessageId":"3",
+    "MachineName":"0",
+    "MaintenanceThreshold":500,
+    "ActualMaintenanceStart":"2023-12-11T15:31:01",
+    "ActualMaintenanceEnd":"2023-12-11T15:33:44",
+    "PlannedMaintenanceStart":"2024-02-05T01:47:11",
+    "PlannedMaintenanceEnd":"2024-02-05T02:02:11",
+    "MaintenanceDuration":164,
+    "MaintenanceStaff":"Zimmermann Fabian",
+    "MaintenanceCosts":0.0,
+    "ConversationId":"Maintenance_1::503"
+}
+}
+         
+         */
         public int MaintenanceDuration { get; set; }
         public string? MaintenanceStaff { get; set; }
         public double? MaintenanceCosts { get; set; }
@@ -47,7 +68,6 @@ namespace ComplexAssetAdministrationShellScenario
                                 Program.Configuration["MES_APPLICATION_CONFIG:PUBLICATION_TOPIC"], retryMessage);
                             return Task.CompletedTask;
                         });
-                        rDictionary["OrderStatus"] = OrderStatus.AASOrderCompletionNotification;
 
                     }
                     catch (Exception e)
@@ -57,14 +77,15 @@ namespace ComplexAssetAdministrationShellScenario
 
                 }
 
-                if (rDictionary["OrderStatus"] == OrderStatus.OrderCompleted)
+               else if (rDictionary["OrderStatus"] == OrderStatus.OrderCompleted)
                     
                 {
-                    Console.WriteLine("We are stopping the retry policy for ////// : conversation id: " + conversationId);
+                    Console.WriteLine("We are stopping the retry policy for change message, conversation id: " + conversationId);
                     break;
                     
 
                 }
+                
             }
         }
 
@@ -121,7 +142,7 @@ namespace ComplexAssetAdministrationShellScenario
                 I40Message outBoundMessage = new I40Message();
                 
 
-                var frame = FrameBuilder.CreateFrame(receiver: receiver.ToString(), conversationId: requestData.ConversationId, messageId: Int32.Parse(requestData.MessageId),
+                var frame = FrameBuilder.CreateFrame(receiver: receiver.ToString(), conversationId: requestData.ConversationId, messageId: 1 + Int32.Parse(requestData.MessageId),
                     messageType: "CHANGE");
                 outBoundMessage.frame = frame;
                 outBoundMessage.interactionElements = ie;

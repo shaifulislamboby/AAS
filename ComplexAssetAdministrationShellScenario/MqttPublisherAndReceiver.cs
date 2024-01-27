@@ -38,7 +38,7 @@ namespace ComplexAssetAdministrationShellScenario
             }
 
             byte[] payload = Encoding.UTF8.GetBytes(message);
-            mqttClient.Publish(topic, payload, MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, true);
+            mqttClient.Publish(topic, payload, MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
         }
 
         public static async Task MqttSubscribeAsync(string brokerAddress, int brokerPort, string topic, DataStorage ma,
