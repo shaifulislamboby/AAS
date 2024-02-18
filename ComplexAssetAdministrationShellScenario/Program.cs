@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,7 +42,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ComplexAssetAdministrationShellScenario
 {
-    internal class Program
+    internal class Program 
     {
         private static RegistryHttpClient registryClient;
         private static DataStorage mainDataStorage = new DataStorage();
@@ -68,10 +69,10 @@ namespace ComplexAssetAdministrationShellScenario
                 //string mqttBrokerAddress = Configuration["MQTT_BROKER_ADDRESS"];
                 string BrokerAddress = Configuration["MES_APPLICATION_CONFIG:BROKER_ADDRESS"];
                 int BrokerPort = Int32.Parse(Configuration["MES_APPLICATION_CONFIG:BROKER_PORT"]);
-                string SubsciptionTopic = Configuration["MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC"];
+               List<string> subsciptionTopic = Configuration.GetSection("MES_APPLICATION_CONFIG:SUBSCRIPTION_TOPIC").Get<List<string>>().ToList();
                 Console.WriteLine(BrokerAddress);
                 
-                await MqttPublisherAndReceiver.MqttSubscribeAsync(BrokerAddress, BrokerPort, SubsciptionTopic, mainDataStorage,
+                await MqttPublisherAndReceiver.MqttSubscribeAsync(BrokerAddress, BrokerPort, subsciptionTopic, mainDataStorage,
                     pData);
 
                 // Wait for some time to receive messages (you can adjust this based on your requirements)
@@ -93,6 +94,35 @@ namespace ComplexAssetAdministrationShellScenario
             LoadSingleShell();
             LoadMultipleShells();
             LoadMultipleSubmodels();
+            
+            // Create an instance of HttpClient
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    // Make a GET request to the API endpoint
+                    HttpResponseMessage response = client.GetAsync("http://localhost:8003/api/save_data/").Result;
+
+                    // Check if the request was successful (status code 200-299)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read and print the response content
+                        string content = response.Content.ReadAsStringAsync().Result;
+                        Console.WriteLine(content);
+                    }
+                    else
+                    {
+                        // Handle the error if the request was not successful
+                        Console.WriteLine($"Error: {response.StatusCode} - {response.ReasonPhrase}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions that may occur during the request
+                    Console.WriteLine($"Exception: {ex.Message}");
+                }
+            }
+
         }
 
         public static void LoadMultipleSubmodels()
@@ -322,6 +352,7 @@ namespace ComplexAssetAdministrationShellScenario
                 new AssetAdministrationShellDescriptor(aas, aasServiceProvider.ServiceDescriptor.Endpoints));
             registryClient.CreateOrUpdateSubmodelRegistration(aas.Identification.Id, testSubmodel.Identification.Id,
                 new SubmodelDescriptor(testSubmodel, submodelServiceProvider.ServiceDescriptor.Endpoints));
+           
         }
 
         private static void LoadRegistry()

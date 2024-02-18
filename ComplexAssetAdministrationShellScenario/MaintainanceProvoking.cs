@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using ComplexAssetAdministrationShellScenario.Serializers;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -69,7 +70,86 @@ namespace ComplexAssetAdministrationShellScenario
                 
             }
         }
-        
+
+        public static async Task call_maintence_endpoint_usecase2(string jsonData)
+        {
+            _data = JsonConvert.DeserializeObject(jsonData);
+            var ie = _data.interactionElements;
+            Console.WriteLine(_data);
+            List<Interrup> interrups = JsonConvert.DeserializeObject<List<Interrup>>(ie.ToString());
+            _conversationId = _data.frame.conversationId;
+            sender = _data.frame.sender.identification.id;
+            Usecase2data da = new Usecase2data()
+            {
+                ConversationID = _conversationId,
+                Interruptions = interrups,
+                MessagID = 1.ToString()
+            };
+            var requestdata = JsonConvert.SerializeObject(da).ToString();
+           
+            string url = Program.Configuration["MES_APPLICATION_CONFIG:MES_ENDPOINT_USE_CASE2"];
+            try
+            {
+                HttpClient client = new HttpClient();
+                StringContent content = new StringContent(requestdata, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(url, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<UseCase2response>(responseContent);
+                    List<Usecasetwoie> ieusecsetwo = new List<Usecasetwoie>();
+                    Usecasetwoie ietwo = new Usecasetwoie()
+                    {
+                        DelayPerOrder = data.DelayPerOrder,
+                        Month1 = data.Month1,
+                        Turnover1 = data.Turnover1,
+                        Month2 = data.Month2,
+                        Turnover2 = data.Turnover2,
+                        Month3 = data.Month3,
+                        Turnover3 = data.Turnover3
+                    };
+                    ieusecsetwo.Add(ietwo);
+                    I40Message<Usecasetwoie> message = new I40Message<Usecasetwoie>();
+                    message.interactionElements = ieusecsetwo;
+                  var frame =  FrameBuilder.CreateFrame(sender.ToString(), _conversationId, 10, "ACKNOWLEDGE");
+                  message.frame = frame;
+                  var outBoundMessageString = JsonConvert.SerializeObject(message);
+                  Console.WriteLine(message);
+
+                  
+                  try
+                  {
+                      _ = Task.Run(() =>
+                      {
+                          MqttPublisherAndReceiver.MqttPublishAsync(MqttPublisherAndReceiver.brockerAddress,
+                              MqttPublisherAndReceiver.brockerPort,Program.Configuration["MES_APPLICATION_CONFIG:PUBLICATION_TOPIC_USE_CASE2"] ,outBoundMessageString);
+                          return Task.CompletedTask;
+                      });
+
+                  }
+                  catch (Exception e)
+                  {
+                      Console.WriteLine(e);
+                      throw;
+                  }
+
+
+                }
+                else
+                {
+                        Console.WriteLine("Message cannot be sent http request is not successful ");
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+           
+           
+        }
         public static async Task call_maintenance_endpoint(string jsonData, DataStorage storage, string realRoot)
         {
             try
@@ -182,7 +262,10 @@ namespace ComplexAssetAdministrationShellScenario
                             storage.ModifyInnerValue(maintenanceData.ConversationId, "OrderStatus",
                                 OrderStatus.OrderAccepted);
                             Console.WriteLine(maintenanceData.MessageId);
-                            I40Message outBoundMessage = new I40Message();
+                            //Creating new I4.0 message
+                        //    I40Message outBoundMessage = new I40Message();
+                        I40Message<SubmodelElementCollection> outBoundMessage =
+                            new I40Message<SubmodelElementCollection>();
                             var mt = MaintenanceType.GetMaintenanceType(int.Parse(maintenanceThreshold));
                             var ie = MaintenanceActions.GetMaintenanceRecord(machineName, mt);
 

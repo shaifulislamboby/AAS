@@ -3,20 +3,19 @@ using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 
 namespace ComplexAssetAdministrationShellScenario.Serializers
 {
-    public class I40Message
+    public class I40Message<T>
     {
-       
-
-        public List<SubmodelElementCollection> interactionElements { get; set; }
+        
+        public List<T> interactionElements { get; set; }
         public Frame frame { get; set; }
         
 
-        public void SetInteractionElement(List<SubmodelElementCollection> interactionElements)
+        public void SetInteractionElement(List<T> interactionElements)
         {
             this.interactionElements = interactionElements;
         }
 
-        public List<SubmodelElementCollection> GetInteracrionElement()
+        public List<T> GetInteracrionElement()
         {
             return interactionElements;
         }

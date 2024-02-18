@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using BaSyx.Models.Core.AssetAdministrationShell.Implementations;
 using ComplexAssetAdministrationShellScenario.Serializers;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -139,8 +140,9 @@ namespace ComplexAssetAdministrationShellScenario
                 }
 
                 object data = rDictionary["data"];
-                I40Message outBoundMessage = new I40Message();
-                
+              //  I40Message outBoundMessage = new I40Message();
+              I40Message<SubmodelElementCollection> outBoundMessage =
+                  new I40Message<SubmodelElementCollection>();
 
                 var frame = FrameBuilder.CreateFrame(receiver: receiver.ToString(), conversationId: requestData.ConversationId, messageId: 1 + Int32.Parse(requestData.MessageId),
                     messageType: "CHANGE");
