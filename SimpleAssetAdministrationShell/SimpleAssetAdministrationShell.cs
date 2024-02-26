@@ -35,7 +35,10 @@ namespace SimpleAssetAdministrationShell
 
         public static AssetAdministrationShell GetAssetAdministrationShell()
         {
-         /*   var aasdb = GetAasFromDB();
+
+           var aasdb = GetAasFromDB();
+            
+            /*   var aasdb = GetAasFromDB();
 
            // if (aasdb! == null)
             {
@@ -1282,7 +1285,7 @@ namespace SimpleAssetAdministrationShell
 {
 
     HttpClient client = new HttpClient();
-
+    
     try
     {
         // Make a GET request to the API endpoint
@@ -1351,6 +1354,7 @@ namespace SimpleAssetAdministrationShell
             };
             
             //Parsing the Submodels
+            
 
             foreach (var dat in submodelData.Children<JObject>())
             {
@@ -1358,31 +1362,53 @@ namespace SimpleAssetAdministrationShell
                 var id = dat["idShort"];
                 var submodelElement = dat["submodelElements"];
                 var identification2 = dat["identification"];
-               
-                
-                identification = JsonConvert.DeserializeObject<Identifier>(identification2.ToString());
-                try
-                {
-                    Submodel submodel = new Submodel(id.ToString(), identification)
-                    {
-                    };
-                    submodel.SubmodelElements = new ElementContainer<ISubmodelElement>(submodel);
-                    foreach (var VARIABLE in submodelElement.Children<JObject>())
-                    {
-                    
-                            Console.WriteLine(VARIABLE);
 
-                    }
-                    aas.Submodels.Add(submodel);
-                }
-                catch(Exception ex)
+             
+                identification = JsonConvert.DeserializeObject<Identifier>(identification2.ToString());
+                Submodel sub = new Submodel(id.ToString(), identification);
+                
+                
+                var da = JsonConvert.DeserializeObject<List<Dictionary<string, Object>>>(submodelElement.ToString());
+                foreach (var VARIABLE in da)
                 {
-                    Console.WriteLine(ex);
+                    String idShort = (string)VARIABLE["idShort"];
+                    var modeltype = JsonConvert.DeserializeObject<ModelType>(VARIABLE["modelType"].ToString());
+                    var modelName = modeltype.Name;
+                  //  var modelvalue = VARIABLE["valueType"];
+                    
+                    switch (modelName)
+                    {
+                        case "Property":
+                            var modelvalue = VARIABLE["valueType"];
+                            var value = VARIABLE.ContainsKey("value") ? VARIABLE["value"] : null;
+                            var property = new Property(idShort)
+                            {
+                                ValueType = modelvalue.ToString(),
+                                Value = value
+
+                            };
+                            sub.SubmodelElements.Add(property);
+                            break;   
+                        
+                        case "SubmodelElementCollection":
+                            var collections = CreateSubmodelElementCollection(VARIABLE);
+                            sub.SubmodelElements.Add(collections);
+                            break;
+                        
+                        default:
+                        
+                            break;
+                        
+                    }
+                    aas.Submodels.Add(sub);
+                
                 }
+
+                return aas;
 
             } 
            
-
+           
 
             // Convert addressValue to JObject
 
@@ -1397,8 +1423,50 @@ namespace SimpleAssetAdministrationShell
     }
 
     return null;
-
 }
+    static SubmodelElementCollection CreateSubmodelElementCollection(Dictionary<string, object> collectionData)
+    {
+        var collection = new SubmodelElementCollection((string)collectionData["idShort"]);
+        var subElements = JsonConvert.DeserializeObject<List<Dictionary<string, Object>>>(collectionData["value"].ToString());
+
+
+        foreach (var subElementData in subElements)
+        {
+            var subElement = (Dictionary<string, object>)subElementData;
+            string subIdShort = (string)subElement["idShort"];
+            var modeltype = JsonConvert.DeserializeObject<ModelType>(subElementData["modelType"].ToString());
+            var modelName = modeltype.Name;
+
+            switch (modelName)
+            {
+                case "Property":
+                    var valueType = (string)subElement["valueType"];
+                    var value = subElement.ContainsKey("value") ? subElement["value"] : null;
+                    var property = new Property<object>(subIdShort)
+                    {
+                        ValueType = valueType,
+                        Value = value
+                    };
+                    collection.Value.Add(property);
+                    break;
+
+                case "SubmodelElementCollection":
+                    var nestedCollection = CreateSubmodelElementCollection(subElement);
+                    collection.Value.Add(nestedCollection);
+                    break;
+
+                // Handle other model types if necessary
+
+                default:
+                    break;
+            }
+        }
+
+        return collection;
+    }
+   
+       
+
     public static Submodel GetTestSubmodel()
 {
     var propertyValue = "TestFromInside";

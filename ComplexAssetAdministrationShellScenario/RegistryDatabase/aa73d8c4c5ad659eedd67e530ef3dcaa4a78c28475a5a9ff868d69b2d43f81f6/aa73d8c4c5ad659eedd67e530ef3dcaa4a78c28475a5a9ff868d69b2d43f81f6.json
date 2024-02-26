@@ -24,7 +24,7 @@
       "type": "http"
     },
     {
-      "address": "http://192.168.0.103:5111/aas",
+      "address": "http://192.168.0.101:5111/aas",
       "type": "http"
     }
   ],

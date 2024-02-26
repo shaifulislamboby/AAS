@@ -145,7 +145,7 @@ namespace ComplexAssetAdministrationShellScenario
                   new I40Message<SubmodelElementCollection>();
 
                 var frame = FrameBuilder.CreateFrame(receiver: receiver.ToString(), conversationId: requestData.ConversationId, messageId: 1 + Int32.Parse(requestData.MessageId),
-                    messageType: "CHANGE");
+                    messageType: "CHANGE","Maintenance");
                 outBoundMessage.frame = frame;
                 outBoundMessage.interactionElements = ie;
                 string outBoundMessageString = JsonConvert.SerializeObject(outBoundMessage);

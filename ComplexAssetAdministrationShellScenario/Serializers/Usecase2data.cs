@@ -5,8 +5,8 @@ namespace ComplexAssetAdministrationShellScenario.Serializers
 {
     public class Usecase2data
     {
-        public string ConversationID { get; set; }
-        public string MessagID { get; set; }
+        public string ConversationId { get; set; }
+        public string MessageID { get; set; }
         public List<Interrup> Interruptions { get; set; } 
     }
     public class Interrup

@@ -81,9 +81,9 @@ namespace ComplexAssetAdministrationShellScenario
             sender = _data.frame.sender.identification.id;
             Usecase2data da = new Usecase2data()
             {
-                ConversationID = _conversationId,
+                ConversationId = _conversationId,
                 Interruptions = interrups,
-                MessagID = 1.ToString()
+                MessageID = 1.ToString()
             };
             var requestdata = JsonConvert.SerializeObject(da).ToString();
            
@@ -111,7 +111,7 @@ namespace ComplexAssetAdministrationShellScenario
                     ieusecsetwo.Add(ietwo);
                     I40Message<Usecasetwoie> message = new I40Message<Usecasetwoie>();
                     message.interactionElements = ieusecsetwo;
-                  var frame =  FrameBuilder.CreateFrame(sender.ToString(), _conversationId, 10, "ACKNOWLEDGE");
+                  var frame =  FrameBuilder.CreateFrame(sender.ToString(), _conversationId, 10, "ACKNOWLEDGE","Negotiation");
                   message.frame = frame;
                   var outBoundMessageString = JsonConvert.SerializeObject(message);
                   Console.WriteLine(message);
@@ -271,7 +271,7 @@ namespace ComplexAssetAdministrationShellScenario
 
                             var frame = FrameBuilder.CreateFrame(receiver: sender,
                                 conversationId: maintenanceData.ConversationId, messageId: maintenanceData.MessageId,
-                                messageType: "NOTIFY_ACCEPTED");
+                                messageType: "NOTIFY_ACCEPTED","Maintenance");
                             outBoundMessage.frame = frame;
                             outBoundMessage.interactionElements = ie;
                             outBoundMessageString = JsonConvert.SerializeObject(outBoundMessage);

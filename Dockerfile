@@ -26,7 +26,10 @@ ENV BROKER_ADDRESS="test.mosquitto.org"
 ENV BROKER_PORT=1883
 ENV SUBSCRIPTION_TOPIC="BasyxMesAASOrderHandling"
 ENV PUBLICATION_TOPIC="aas-notification"
+ENV PUBLICATION_TOPIC_USE_CASE2="Basys/aas-notification/usecase2"
 ENV MES_ENDPOINT="https://b184-141-44-206-87.ngrok-free.app/api/MesOrder/"
+ENV MES_ENDPOINT_USE_CASE2="http://localhost:7486/api/Usecase2endpoint",
+
 ENV MES_AAS_ENDPOINT="http://host.docker.internal:5111"
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build

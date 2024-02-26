@@ -15,7 +15,7 @@ namespace ComplexAssetAdministrationShellScenario
             //bool ordered = false,
             //bool allowDuplicates = false,
             //string kind = "Instance",
-            string conversationId = "Maintenance_1::1", int messageId = 1, string messageType = "notify_accepted")
+            string conversationId = "Maintenance_1::1", int messageId = 1, string messageType = "notify_accepted",string Protocol ="notify_init")
         {
             // Build the JSON object using the provided arguments
             var frame = new Frame
@@ -64,7 +64,7 @@ namespace ComplexAssetAdministrationShellScenario
                         {
                             type = "GlobalReference",
                             idType ="CUSTOM",
-                            value ="Maintenance"
+                            value =Protocol
                         }
 
                     }
